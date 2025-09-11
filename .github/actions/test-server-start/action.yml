@@ -1,0 +1,53 @@
+name: 'Test FastAPI Server'
+description: 'Start FastAPI server and test health endpoint'
+inputs:
+  host:
+    description: 'Server host'
+    required: false
+    default: '127.0.0.1'
+  port:
+    description: 'Server port'
+    required: false
+    default: '8000'
+  app-module:
+    description: 'FastAPI app module (e.g., main:app)'
+    required: false
+    default: 'main:app'
+  health-endpoint:
+    description: 'Health check endpoint path'
+    required: false
+    default: '/health'
+  startup-timeout:
+    description: 'Seconds to wait for server startup'
+    required: false
+    default: '5'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Start FastAPI server and test
+      shell: bash
+      run: |
+        echo "Starting FastAPI server..."
+        uvicorn ${{ inputs.app-module }} --host ${{ inputs.host }} --port ${{ inputs.port }} &
+        SERVER_PID=$!
+        
+        echo "Waiting ${{ inputs.startup-timeout }} seconds for server to start..."
+        sleep ${{ inputs.startup-timeout }}
+        
+        echo "Testing health endpoint at http://${{ inputs.host }}:${{ inputs.port }}${{ inputs.health-endpoint }}"
+        if curl -f http://${{ inputs.host }}:${{ inputs.port }}${{ inputs.health-endpoint }}; then
+          echo "✅ Health check passed!"
+        else
+          echo "❌ Health check failed!"
+          kill $SERVER_PID 2>/dev/null || true
+          exit 1
+        fi
+        
+        echo "Stopping server..."
+        kill $SERVER_PID
+        
+        # Wait a moment for clean shutdown
+        sleep 1
+        
+        echo "✅ Server test completed successfully!"
