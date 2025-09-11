@@ -6,31 +6,32 @@ on:
 
 jobs:
   unit_tests:
-    name: Run unit tests
+    name: 🧪 Run unit tests
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./backend
     
     steps:
-    - uses: actions/checkout@v4
+    - name: 📁 Checkout code
+      uses: actions/checkout@v4
     
-    - name: Set up Python 3.13.7
+    - name: 🐍 Set up Python 3.13.7
       uses: actions/setup-python@v4
       with:
         python-version: '3.13.7'
     
-    - name: Install dependencies
+    - name: 🏗️ Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run tests
+    - name: 🧪 Run tests
       run: |
         pytest tests/unit  -v
 
   integration_tests:
-    name: Run integration tests
+    name: ⚙️ Run integration tests
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -52,58 +53,25 @@ jobs:
           --health-retries 5
     
     steps:
-    - uses: actions/checkout@v4
+    - name: 📁 Checkout code
+      uses: actions/checkout@v4
     
-    - name: Set up Python 3.13
+    - name: 🐍 Set up Python 3.13
       uses: actions/setup-python@v4
       with:
         python-version: '3.13.7'
     
-    - name: Install dependencies
+    - name: 🏗️ Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        sudo apt-get update
-        sudo apt-get install -y postgresql-client
 
-    - name: Set up database
-      run: |
-        # Copy test environment file
-        cp .env.test .env
-        
-        # Read database configuration from .env.test
-        export $(grep -v '^#' .env.test | xargs)
-        echo "Database config: DB_NAME=$DB_NAME, DB_USER=$DB_USER"
-        
-        # Wait for PostgreSQL to be ready
-        until pg_isready -h localhost -p 5432 -U postgres; do
-          echo "Waiting for PostgreSQL..."
-          sleep 2
-        done
-        
-        # Create user and database
-        PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE USER \"$DB_USER\" WITH PASSWORD '$DB_PASSWORD';"
-        PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE $DB_NAME OWNER \"$DB_USER\";"
-        
-        # Create recipes table
-        PGPASSWORD="$DB_PASSWORD" psql -h localhost -U "$DB_USER" -d "$DB_NAME" -c "
-        CREATE TABLE IF NOT EXISTS recipes (
-          id SERIAL PRIMARY KEY,
-          name VARCHAR(255) NOT NULL,
-          category VARCHAR(20),
-          ingredients TEXT NOT NULL,
-          instructions TEXT NOT NULL,
-          prep_time INTEGER,
-          portions INTEGER
-        );"
+    - name: 💿 Setup database
+      uses: ./.github/actions/setup-database
+      with:
+        working-directory: './backend'
 
-        # Insert sample recipe
-        PGPASSWORD="$DB_PASSWORD" psql -h localhost -U "$DB_USER" -d "$DB_NAME" -c "
-        INSERT INTO recipes (name, category, ingredients, instructions, prep_time, portions) 
-        VALUES ('Scrambled Eggs', 'breakfast', '2 eggs, 1 tbsp butter, salt, pepper', 'Beat eggs, heat butter in pan, add eggs and scramble gently', 5, 1);"
-
-
-    - name: Test server startup
+    - name: ▶️ Test server startup
       uses: ./.github/actions/test-server-start
       with:
         app-module: 'app.main:app'
@@ -113,6 +81,6 @@ jobs:
         startup-timeout: '5'
         working-directory: './backend'
     
-    - name: Run tests
+    - name: 🧪 Run tests
       run: |
         pytest tests/integration -v
