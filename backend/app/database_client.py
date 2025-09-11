@@ -55,7 +55,7 @@ class DatabaseClient:
             cursor.execute("SELECT 1")
             cursor.close()
             return True
-        except:
+        except psycopg2.Error:
             return False
     
     def get_all_recipes(self) -> List[Dict[str, Any]]:

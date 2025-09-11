@@ -5,9 +5,15 @@ inputs:
     description: 'Working directory containing .env.test file'
     required: true
     default: './backend'
+  db-password:
+    description: 'Database password for the user (from secrets)'
+    required: false
+    default: ''
 
 runs:
   using: 'composite'
+  env:      
+    DB_PASSWORD: "${{ inputs.db-password }}"
   steps:
     - name: Install PostgreSQL client
       shell: bash

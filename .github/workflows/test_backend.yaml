@@ -70,6 +70,7 @@ jobs:
       uses: ./.github/actions/setup-database
       with:
         working-directory: './backend'
+        db-password: ${{ secrets.DB_PASSWORD }}
 
     - name: ▶️ Test server startup
       uses: ./.github/actions/test-server-start
