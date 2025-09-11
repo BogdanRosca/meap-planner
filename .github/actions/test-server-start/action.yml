@@ -21,14 +21,21 @@ inputs:
     description: 'Seconds to wait for server startup'
     required: false
     default: '5'
+  working-directory:
+    description: 'Working directory to run commands from'
+    required: false
+    default: '.'
 
 runs:
   using: 'composite'
   steps:
     - name: Start FastAPI server and test
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: |
-        echo "Starting FastAPI server..."
+        echo "Starting FastAPI server from directory: $(pwd)"
+        echo "Starting uvicorn with module: ${{ inputs.app-module }}"
+        
         uvicorn ${{ inputs.app-module }} --host ${{ inputs.host }} --port ${{ inputs.port }} &
         SERVER_PID=$!
         
