@@ -1,8 +1,13 @@
 """
 Integration tests for database connectivity
 """
+import os
 import pytest
 import psycopg2
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 class TestDatabaseConnection:
@@ -12,11 +17,11 @@ class TestDatabaseConnection:
     def db_connection(self):
         """Create a database connection for testing"""
         connection = psycopg2.connect(
-            host="localhost",
-            port="5432",
-            database="supermarket",
-            user="chubby.user",
-            password="JustE3@t"
+            host=os.getenv("DB_HOST"),
+            port=os.getenv("DB_PORT"),
+            database=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD")
         )
         yield connection
         connection.close()
