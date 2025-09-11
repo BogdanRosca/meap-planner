@@ -14,9 +14,9 @@ class TestDatabaseConnection:
         connection = psycopg2.connect(
             host="localhost",
             port="5432",
-            database="mealplanner",
-            user="bogdan.rosca",
-            password=""
+            database="supermarket",
+            user="chubby.user",
+            password="JustE3@t"
         )
         yield connection
         connection.close()
