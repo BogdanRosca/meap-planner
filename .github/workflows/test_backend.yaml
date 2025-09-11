@@ -1,8 +1,6 @@
 name: Test BE service
 
 on:
-  push:
-    branches: [ main, add-workflow-and-structure ]
   pull_request:
     branches: [ main ]
 
@@ -54,9 +52,9 @@ jobs:
     - name: Test server startup
       uses: ./.github/actions/test-server-start
       with:
-        host: '127.0.0.1'
-        port: '8000'
         app-module: 'app.main:app'
         health-endpoint: '/health'
+        host: '127.0.0.1'
+        port: '8000'
         startup-timeout: '5'
         working-directory: './backend'
