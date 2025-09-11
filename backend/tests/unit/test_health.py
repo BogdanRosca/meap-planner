@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from main import app
+from app.main import app
 
 # Create a test client
 client = TestClient(app)
@@ -15,7 +15,7 @@ def test_health_endpoint():
     # Check that the response contains the expected JSON
     assert response.json() == {
         "status": "healthy",
-        "message": "Meal Planner API is running!"
+        "message": "Meal Planner API is running !"
     }
 
 def test_health_endpoint_response_format():
