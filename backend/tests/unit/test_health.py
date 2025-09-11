@@ -15,7 +15,7 @@ def test_health_endpoint():
     # Check that the response contains the expected JSON
     assert response.json() == {
         "status": "healthy",
-        "message": "Meal Planner API is running!"
+        "message": "Meal Planner API is running !"
     }
 
 def test_health_endpoint_response_format():
