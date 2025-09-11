@@ -71,6 +71,10 @@ jobs:
         # Copy test environment file
         cp .env.test .env
         
+        # Read database configuration from .env.test
+        export $(grep -v '^#' .env.test | xargs)
+        echo "Database config: DB_NAME=$DB_NAME, DB_USER=$DB_USER"
+        
         # Wait for PostgreSQL to be ready
         until pg_isready -h localhost -p 5432 -U postgres; do
           echo "Waiting for PostgreSQL..."
@@ -78,11 +82,11 @@ jobs:
         done
         
         # Create user and database
-        PGPASSWORD=JustE3@t psql -h localhost -U postgres -c "CREATE USER \"chubby.user\";"
-        PGPASSWORD=JustE3@t psql -h localhost -U postgres -c "CREATE DATABASE supermarket OWNER \"chubby.user\";"
+        PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE USER \"$DB_USER\" WITH PASSWORD '$DB_PASSWORD';"
+        PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE $DB_NAME OWNER \"$DB_USER\";"
         
         # Create recipes table
-        PGPASSWORD=JustE3@t psql -h localhost -U "chubby.user" -d supermarket -c "
+        PGPASSWORD="$DB_PASSWORD" psql -h localhost -U "$DB_USER" -d "$DB_NAME" -c "
         CREATE TABLE IF NOT EXISTS recipes (
           id SERIAL PRIMARY KEY,
           name VARCHAR(255) NOT NULL,
