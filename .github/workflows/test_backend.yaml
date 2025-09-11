@@ -33,10 +33,11 @@ jobs:
   integration_tests:
     name: ⚙️ Run integration tests
     runs-on: ubuntu-latest
+    env: 
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
     defaults:
       run:
         working-directory: ./backend
-    
     services:
       postgres:
         image: postgres:15
@@ -70,7 +71,7 @@ jobs:
       uses: ./.github/actions/setup-database
       with:
         working-directory: './backend'
-        db-password: ${{ secrets.DB_PASSWORD }}
+        db-password: ${{ env.DB_PASSWORD }}
 
     - name: ▶️ Test server startup
       uses: ./.github/actions/test-server-start

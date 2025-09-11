@@ -28,9 +28,6 @@ runs:
         
         # Read database configuration from .env.test
         export $(grep -v '^#' .env.test | xargs)
-        
-        # Read set DB_PASSWORD based on input
-        export DB_PASSWORD="${{ inputs.db-password }}"
       
         echo "Database config: DB_NAME=$DB_NAME, DB_USER=$DB_USER"
         
