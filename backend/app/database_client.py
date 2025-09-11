@@ -2,22 +2,27 @@
 Database client for the Meal Planner application.
 Handles all database connections and operations.
 """
+import os
 import psycopg2
 from typing import Optional, List, Dict, Any
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 class DatabaseClient:
     """Client for database operations"""
     
-    def __init__(self, host: str = "localhost", port: str = "5432", 
-                 database: str = "mealplanner", user: str = "bogdan.rosca", 
-                 password: str = ""):
+    def __init__(self, host: Optional[str] = None, port: Optional[str] = None, 
+                 database: Optional[str] = None, user: Optional[str] = None, 
+                 password: Optional[str] = None):
         """Initialize database client with connection parameters"""
-        self.host = host
-        self.port = port
-        self.database = database
-        self.user = user
-        self.password = password
+        self.host = host or os.getenv("DB_HOST")
+        self.port = port or os.getenv("DB_PORT")
+        self.database = database or os.getenv("DB_NAME")
+        self.user = user or os.getenv("DB_USER")
+        self.password = password or os.getenv("DB_PASSWORD")
         self._connection = None
     
     def connect(self):

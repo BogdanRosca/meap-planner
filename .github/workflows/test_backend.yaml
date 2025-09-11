@@ -68,6 +68,9 @@ jobs:
 
     - name: Set up database
       run: |
+        # Copy test environment file
+        cp .env.test .env
+        
         # Wait for PostgreSQL to be ready
         until pg_isready -h localhost -p 5432 -U postgres; do
           echo "Waiting for PostgreSQL..."
@@ -75,11 +78,11 @@ jobs:
         done
         
         # Create user and database
-        PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE USER \"bogdan.rosca\";"
-        PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE mealplanner OWNER \"bogdan.rosca\";"
+        PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE USER \"chubby.user\";"
+        PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE supermarket OWNER \"chubby.user\";"
         
         # Create recipes table
-        PGPASSWORD="" psql -h localhost -U "bogdan.rosca" -d mealplanner -c "
+        PGPASSWORD=postgres psql -h localhost -U "chubby.user" -d supermarket -c "
         CREATE TABLE IF NOT EXISTS recipes (
           id SERIAL PRIMARY KEY,
           name VARCHAR(255) NOT NULL,
