@@ -90,11 +90,13 @@ jobs:
         CREATE TABLE IF NOT EXISTS recipes (
           id SERIAL PRIMARY KEY,
           name VARCHAR(255) NOT NULL,
-          description TEXT,
-          ingredients TEXT,
-          instructions TEXT,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          category VARCHAR(20),
+          ingredients TEXT NOT NULL,
+          instructions TEXT NOT NULL,
+          prep_time INTEGER,
+          portions INTEGER
         );"
+
 
     - name: Test server startup
       uses: ./.github/actions/test-server-start
