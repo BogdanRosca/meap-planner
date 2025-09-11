@@ -27,7 +27,7 @@ jobs:
 
     - name: Run tests
       run: |
-        pytest tests/ -v
+        pytest tests/unit  -v
 
   integration_tests:
     name: Run integration tests
@@ -58,3 +58,7 @@ jobs:
         port: '8000'
         startup-timeout: '5'
         working-directory: './backend'
+    
+    - name: Run tests
+      run: |
+        pytest tests/integration -v
