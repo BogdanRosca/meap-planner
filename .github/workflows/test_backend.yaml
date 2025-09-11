@@ -10,6 +10,9 @@ jobs:
   unit_tests:
     name: Run unit tests
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
     
     steps:
     - uses: actions/checkout@v4
@@ -21,18 +24,19 @@ jobs:
     
     - name: Install dependencies
       run: |
-        cd backend
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
     - name: Run tests
       run: |
-        cd backend
         pytest tests/ -v
 
   integration_tests:
     name: Run integration tests
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
     
     steps:
     - uses: actions/checkout@v4
@@ -44,7 +48,6 @@ jobs:
     
     - name: Install dependencies
       run: |
-        cd backend
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
@@ -53,6 +56,6 @@ jobs:
       with:
         host: '127.0.0.1'
         port: '8000'
-        app-module: 'main:app'
+        app-module: 'app.main:app'
         health-endpoint: '/health'
         startup-timeout: '5'
