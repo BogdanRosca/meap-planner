@@ -78,11 +78,11 @@ jobs:
         done
         
         # Create user and database
-        PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE USER \"chubby.user\";"
-        PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE supermarket OWNER \"chubby.user\";"
+        PGPASSWORD=JustE3@t psql -h localhost -U postgres -c "CREATE USER \"chubby.user\";"
+        PGPASSWORD=JustE3@t psql -h localhost -U postgres -c "CREATE DATABASE supermarket OWNER \"chubby.user\";"
         
         # Create recipes table
-        PGPASSWORD=postgres psql -h localhost -U "chubby.user" -d supermarket -c "
+        PGPASSWORD=JustE3@t psql -h localhost -U "chubby.user" -d supermarket -c "
         CREATE TABLE IF NOT EXISTS recipes (
           id SERIAL PRIMARY KEY,
           name VARCHAR(255) NOT NULL,
