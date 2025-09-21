@@ -41,7 +41,7 @@ runs:
         PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE USER \"$DB_USER\" WITH PASSWORD '$DB_PASSWORD';"
         PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE $DB_NAME OWNER \"$DB_USER\";"
         
-        # Create recipes table with updated schema
+        # Create recipes table 
         PGPASSWORD="$DB_PASSWORD" psql -h localhost -U "$DB_USER" -d "$DB_NAME" -c "
         CREATE TABLE IF NOT EXISTS recipes (
           id SERIAL PRIMARY KEY,
@@ -54,7 +54,7 @@ runs:
           portions INTEGER
         );"
 
-        # Insert sample recipe with structured ingredients
+        # Insert sample recipe
         PGPASSWORD="$DB_PASSWORD" psql -h localhost -U "$DB_USER" -d "$DB_NAME" -c "
         INSERT INTO recipes (name, category, main_ingredients, common_ingredients, instructions, prep_time, portions) 
         VALUES (

@@ -3,7 +3,7 @@ Unit tests for Pydantic models
 """
 import pytest
 from pydantic import ValidationError
-from app.main import Ingredient, RecipeCreate, RecipeResponse
+from app.models import Ingredient, RecipeCreate, RecipeResponse
 
 
 class TestIngredientModel:

@@ -1,44 +1,8 @@
 from .database_client import DatabaseClient
+from .models import Ingredient, RecipeCreate, RecipeUpdate, RecipeResponse
 from fastapi import FastAPI, HTTPException
 from fastapi import status
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-from typing import Optional, List
-
-
-# Pydantic models for request/response validation
-class Ingredient(BaseModel):
-    quantity: float
-    unit: str
-    name: str
-
-class RecipeCreate(BaseModel):
-    name: str
-    category: str
-    main_ingredients: List[Ingredient]
-    common_ingredients: List[str]
-    instructions: str
-    prep_time: int
-    portions: int
-
-class RecipeUpdate(BaseModel):
-    name: Optional[str] = None
-    category: Optional[str] = None
-    main_ingredients: Optional[List[Ingredient]] = None
-    common_ingredients: Optional[List[str]] = None
-    instructions: Optional[str] = None
-    prep_time: Optional[int] = None
-    portions: Optional[int] = None
-
-class RecipeResponse(BaseModel):
-    id: int
-    name: str
-    category: str
-    main_ingredients: List[Ingredient]
-    common_ingredients: List[str]
-    instructions: str
-    prep_time: int
-    portions: int
 
 # Create FastAPI app instance
 app = FastAPI(title="Meal Planner API", version="1.0.0")
