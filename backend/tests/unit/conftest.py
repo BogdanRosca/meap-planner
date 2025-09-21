@@ -170,6 +170,7 @@ UNICODE_RECIPE_DATA = {
     "portions": 6
 }
 
+
 # Recipe with many ingredients
 def generate_many_ingredients_recipe_data():
     """Generate recipe data with many ingredients for testing"""
@@ -189,6 +190,7 @@ def generate_many_ingredients_recipe_data():
         "prep_time": 120,
         "portions": 8
     }
+
 
 # Complex recipe with many ingredients
 COMPLEX_RECIPE_DATA = {

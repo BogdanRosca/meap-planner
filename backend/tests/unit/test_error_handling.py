@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 from fastapi.testclient import TestClient
 from app.main import app
 from app.database_client import DatabaseClient
-from .conftest import (CREATE_RECIPE_DATA, UPDATE_RECIPE_DATA, EDGE_CASE_RECIPE_DATA, 
-                     UNICODE_RECIPE_DATA, EMPTY_RECIPE_DATA, COMPLEX_RECIPE_DATA)
+from .conftest import (CREATE_RECIPE_DATA, EDGE_CASE_RECIPE_DATA,
+                       UNICODE_RECIPE_DATA, EMPTY_RECIPE_DATA, COMPLEX_RECIPE_DATA)
 
 
 # Create a test client
