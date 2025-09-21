@@ -1,23 +1,38 @@
 """
 Tests for database client add_recipe functionality
 """
+import pytest
 from .conftest import TEST_RECIPE_DATA
 
 
 class TestAddRecipe:
     """Test the add_recipe functionality"""
     
-    def test_add_recipe(self, db_client):
-        """Test that we can add a new recipe"""
-        # Connect to database
-        db_client.connect()
+    @pytest.fixture(autouse=True)
+    def setup_and_cleanup(self, db_client):
+        """Setup and cleanup for each test"""
+        # This runs before each test
+        self.db_client = db_client
+        self.db_client.connect()
+        self.created_recipe_ids = []  # Track recipes created during tests
         
+        yield
+        
+        # This runs after each test - cleanup any test data
+        for recipe_id in self.created_recipe_ids:
+            try:
+                self.db_client.delete_recipe(recipe_id)
+            except Exception as e:
+                print(f"Warning: Failed to delete recipe {recipe_id}: {e}")
+    
+    def test_add_recipe(self):
+        """Test that we can add a new recipe"""
         # Get initial recipe count
-        initial_recipes = db_client.get_all_recipes()
+        initial_recipes = self.db_client.get_all_recipes()
         initial_count = len(initial_recipes)
         
         # Add the new recipe
-        added_recipe = db_client.add_recipe(
+        added_recipe = self.db_client.add_recipe(
             name=TEST_RECIPE_DATA["name"],
             category=TEST_RECIPE_DATA["category"],
             main_ingredients=TEST_RECIPE_DATA["main_ingredients"],
@@ -26,6 +41,10 @@ class TestAddRecipe:
             prep_time=TEST_RECIPE_DATA["prep_time"],
             portions=TEST_RECIPE_DATA["portions"]
         )
+        
+        # Track the created recipe ID for cleanup
+        recipe_id = added_recipe['id']
+        self.created_recipe_ids.append(recipe_id)
         
         # Validate the returned recipe structure
         assert isinstance(added_recipe, dict)
@@ -50,7 +69,7 @@ class TestAddRecipe:
         assert set(added_recipe['common_ingredients']) == set(TEST_RECIPE_DATA["common_ingredients"])
         
         # Verify the recipe was actually added to the database
-        updated_recipes = db_client.get_all_recipes()
+        updated_recipes = self.db_client.get_all_recipes()
         assert len(updated_recipes) == initial_count + 1
         
         # Find the newly added recipe in the list

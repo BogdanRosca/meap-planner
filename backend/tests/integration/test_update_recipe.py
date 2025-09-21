@@ -20,11 +20,17 @@ class TestUpdateRecipeEndpointIntegration:
         # This runs before each test
         self.db_client = DatabaseClient()
         self.db_client.connect()
+        self.created_recipe_ids = []
         
         yield
         
         # This runs after each test - cleanup any test data
-        # Note: In a real scenario, you might want to clean up test recipes
+        for recipe_id in self.created_recipe_ids:
+            try:
+                self.db_client.delete_recipe(recipe_id)
+            except Exception as e:
+                print(f"Warning: Failed to delete recipe {recipe_id}: {e}")
+        
         self.db_client.disconnect()
     
     def test_patch_recipe_success(self):
@@ -41,6 +47,7 @@ class TestUpdateRecipeEndpointIntegration:
         )
         
         recipe_id = original_recipe['id']
+        self.created_recipe_ids.append(recipe_id)  # Track for cleanup
         
         # Update the recipe via PATCH endpoint
         update_data = {
@@ -79,6 +86,7 @@ class TestUpdateRecipeEndpointIntegration:
         )
         
         recipe_id = original_recipe['id']
+        self.created_recipe_ids.append(recipe_id)  # Track for cleanup
         
         # Update ingredients via PATCH endpoint
         update_data = {
@@ -129,6 +137,7 @@ class TestUpdateRecipeEndpointIntegration:
         )
         
         recipe_id = original_recipe['id']
+        self.created_recipe_ids.append(recipe_id)  # Track for cleanup
         
         # Try to update with empty payload
         update_data = {}
@@ -154,6 +163,7 @@ class TestUpdateRecipeEndpointIntegration:
         )
         
         recipe_id = original_recipe['id']
+        self.created_recipe_ids.append(recipe_id)  # Track for cleanup
         
         # Try to update with invalid data types
         update_data = {
@@ -182,6 +192,7 @@ class TestUpdateRecipeEndpointIntegration:
         )
         
         recipe_id = original_recipe['id']
+        self.created_recipe_ids.append(recipe_id)  # Track for cleanup
         
         # Update only the name
         update_data = {"name": "Updated Recipe Name Only"}
@@ -215,6 +226,7 @@ class TestUpdateRecipeEndpointIntegration:
         )
         
         recipe_id = original_recipe['id']
+        self.created_recipe_ids.append(recipe_id)  # Track for cleanup
         
         # Try to update with invalid ingredient structure
         update_data = {
