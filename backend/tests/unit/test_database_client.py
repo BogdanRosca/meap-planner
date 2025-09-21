@@ -476,3 +476,150 @@ class TestDatabaseClientInitialization:
         assert client.database == 'param_db'
         assert client.user == 'param_user'
         assert client.password == 'param_pass'
+
+
+class TestUpdateRecipeMethod:
+    """Test the update_recipe method"""
+    
+    def test_update_recipe_success(self):
+        """Test successful recipe update"""
+        # Setup client with mock connection
+        client = DatabaseClient()
+        mock_connection = Mock()
+        mock_cursor = Mock()
+        client._connection = mock_connection
+        mock_connection.cursor.return_value = mock_cursor
+        
+        # Mock fetchone to simulate recipe exists check
+        mock_cursor.fetchone.side_effect = [
+            (1,),  # Recipe exists check
+            (1, 'Updated Recipe', 'dinner', 
+             [{'quantity': 300, 'unit': 'g', 'name': 'pasta'}],
+             ['salt', 'pepper'],
+             'Updated instructions',
+             35, 4)  # Updated recipe data
+        ]
+        
+        # Test data
+        updates = {
+            'name': 'Updated Recipe',
+            'prep_time': 35,
+            'instructions': 'Updated instructions'
+        }
+        
+        # Call method
+        result = client.update_recipe(1, updates)
+        
+        # Assertions
+        assert result is not None
+        assert result['id'] == 1
+        assert result['name'] == 'Updated Recipe'
+        assert result['prep_time'] == 35
+        assert result['instructions'] == 'Updated instructions'
+        
+        # Verify cursor calls (is_connected check, exists check, update, select)
+        assert mock_cursor.execute.call_count == 4
+        mock_connection.commit.assert_called_once()
+        # cursor.close() is called once at the end
+        mock_cursor.close.assert_called()
+    
+    def test_update_recipe_not_found(self):
+        """Test update when recipe doesn't exist"""
+        # Setup client with mock connection
+        client = DatabaseClient()
+        mock_connection = Mock()
+        mock_cursor = Mock()
+        client._connection = mock_connection
+        mock_connection.cursor.return_value = mock_cursor
+        
+        # Mock fetchone to simulate recipe doesn't exist
+        mock_cursor.fetchone.return_value = None
+        
+        # Test data
+        updates = {'name': 'Updated Recipe'}
+        
+        # Call method
+        result = client.update_recipe(999, updates)
+        
+        # Assertions
+        assert result is None
+        # cursor.close() is called in the early return
+        mock_cursor.close.assert_called()
+        mock_connection.commit.assert_not_called()
+    
+    def test_update_recipe_no_connection(self):
+        """Test update when not connected to database"""
+        # Setup client without connection
+        client = DatabaseClient()
+        client._connection = None
+        
+        # Test data
+        updates = {'name': 'Updated Recipe'}
+        
+        # Call method and expect exception
+        with pytest.raises(Exception, match="Not connected to database"):
+            client.update_recipe(1, updates)
+    
+    def test_update_recipe_empty_updates(self):
+        """Test update with no valid fields to update"""
+        # Setup client with mock connection
+        client = DatabaseClient()
+        mock_connection = Mock()
+        mock_cursor = Mock()
+        client._connection = mock_connection
+        mock_connection.cursor.return_value = mock_cursor
+        
+        # Mock fetchone to simulate recipe exists
+        mock_cursor.fetchone.return_value = (1,)
+        
+        # Test data with no valid update fields
+        updates = {'invalid_field': 'value'}
+        
+        # Call method
+        result = client.update_recipe(1, updates)
+        
+        # Assertions
+        assert result is None
+        # cursor.close() is called when no valid fields found
+        mock_cursor.close.assert_called()
+        mock_connection.commit.assert_not_called()
+    
+    def test_update_recipe_with_ingredients(self):
+        """Test updating recipe with main_ingredients and common_ingredients"""
+        # Setup client with mock connection
+        client = DatabaseClient()
+        mock_connection = Mock()
+        mock_cursor = Mock()
+        client._connection = mock_connection
+        mock_connection.cursor.return_value = mock_cursor
+        
+        # Mock fetchone to simulate recipe exists check and return updated data
+        mock_cursor.fetchone.side_effect = [
+            (1,),  # Recipe exists check
+            (1, 'Test Recipe', 'dinner',
+             [{'quantity': 200, 'unit': 'g', 'name': 'rice'}],
+             ['garlic', 'onion'],
+             'Cook rice',
+             25, 2)  # Updated recipe data
+        ]
+        
+        # Test data
+        updates = {
+            'main_ingredients': [{'quantity': 200, 'unit': 'g', 'name': 'rice'}],
+            'common_ingredients': ['garlic', 'onion'],
+            'prep_time': 25
+        }
+        
+        # Call method
+        result = client.update_recipe(1, updates)
+        
+        # Assertions
+        assert result is not None
+        assert result['main_ingredients'] == [{'quantity': 200, 'unit': 'g', 'name': 'rice'}]
+        assert result['common_ingredients'] == ['garlic', 'onion']
+        assert result['prep_time'] == 25
+        
+        # Verify JSON serialization was called for ingredients
+        mock_cursor.execute.assert_called()
+        mock_connection.commit.assert_called_once()
+        mock_cursor.close.assert_called()

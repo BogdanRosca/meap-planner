@@ -21,6 +21,15 @@ class RecipeCreate(BaseModel):
     prep_time: int
     portions: int
 
+class RecipeUpdate(BaseModel):
+    name: Optional[str] = None
+    category: Optional[str] = None
+    main_ingredients: Optional[List[Ingredient]] = None
+    common_ingredients: Optional[List[str]] = None
+    instructions: Optional[str] = None
+    prep_time: Optional[int] = None
+    portions: Optional[int] = None
+
 class RecipeResponse(BaseModel):
     id: int
     name: str
@@ -168,6 +177,45 @@ def delete_recipe(recipe_id: int):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting recipe: {str(e)}")
+    
+    finally:
+        # Always disconnect
+        db_client.disconnect()
+
+@app.patch("/recipes/{recipe_id}", response_model=RecipeResponse)
+def update_recipe(recipe_id: int, recipe_update: RecipeUpdate):
+    """Update a recipe by ID with partial data"""
+    # Create database client
+    db_client = DatabaseClient()
+    
+    try:
+        # Connect to database
+        if not db_client.connect():
+            raise HTTPException(status_code=500, detail="Failed to connect to database")
+        
+        # Convert update data to dict, excluding None values
+        update_data = recipe_update.model_dump(exclude_unset=True)
+        
+        # If no fields to update, return error
+        if not update_data:
+            raise HTTPException(status_code=400, detail="No fields provided for update")
+        
+        # Convert Pydantic Ingredient objects to dictionaries if present
+        # Note: model_dump() already converts nested Pydantic objects to dicts,
+        # so main_ingredients is already a list of dicts at this point
+        
+        # Update the recipe
+        updated_recipe = db_client.update_recipe(recipe_id, update_data)
+        
+        if not updated_recipe:
+            raise HTTPException(status_code=404, detail=f"Recipe with ID {recipe_id} not found")
+        
+        return updated_recipe
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating recipe: {str(e)}")
     
     finally:
         # Always disconnect

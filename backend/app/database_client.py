@@ -175,3 +175,72 @@ class DatabaseClient:
         cursor.close()
         
         return rows_affected > 0
+
+    def update_recipe(self, recipe_id: int, updates: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Update a recipe in the database with partial data"""
+        if not self.is_connected():
+            raise Exception("Not connected to database")
+        
+        cursor = self._connection.cursor()
+        
+        # First check if the recipe exists
+        cursor.execute("SELECT id FROM recipes WHERE id = %s", (recipe_id,))
+        if not cursor.fetchone():
+            cursor.close()
+            return None
+        
+        # Build dynamic update query
+        set_clauses = []
+        values = []
+        
+        for field, value in updates.items():
+            if field in ['name', 'category', 'instructions', 'prep_time', 'portions']:
+                set_clauses.append(f"{field} = %s")
+                values.append(value)
+            elif field == 'main_ingredients':
+                # main_ingredients is stored as JSON
+                set_clauses.append(f"{field} = %s")
+                values.append(json.dumps(value))
+            elif field == 'common_ingredients':
+                # common_ingredients is stored as PostgreSQL array
+                set_clauses.append(f"{field} = %s")
+                values.append(value)
+        
+        if not set_clauses:
+            cursor.close()
+            return None
+        
+        # Add recipe_id to values for WHERE clause
+        values.append(recipe_id)
+        
+        # Execute update query
+        update_query = f"UPDATE recipes SET {', '.join(set_clauses)} WHERE id = %s"
+        cursor.execute(update_query, values)
+        
+        # Get the updated recipe
+        cursor.execute("""
+            SELECT id, name, category, main_ingredients, common_ingredients, 
+                   instructions, prep_time, portions 
+            FROM recipes WHERE id = %s
+        """, (recipe_id,))
+        
+        row = cursor.fetchone()
+        if not row:
+            cursor.close()
+            return None
+        
+        recipe = {
+            'id': row[0],
+            'name': row[1],
+            'category': row[2],
+            'main_ingredients': row[3],
+            'common_ingredients': row[4],
+            'instructions': row[5],
+            'prep_time': row[6],
+            'portions': row[7]
+        }
+        
+        # Commit the transaction
+        self._connection.commit()
+        cursor.close()
+        return recipe

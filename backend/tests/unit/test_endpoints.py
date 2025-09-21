@@ -434,3 +434,206 @@ class TestGetRecipeByIdEndpoint:
         assert response.status_code == 422  # Unprocessable Entity
         json_response = response.json()
         assert "detail" in json_response
+
+
+class TestUpdateRecipeEndpoint:
+    """Test the PATCH /recipes/{recipe_id} endpoint"""
+    
+    @patch('app.main.DatabaseClient')
+    def test_update_recipe_success(self, mock_db_client_class):
+        """Test successful recipe update"""
+        # Setup mock
+        mock_db_client = Mock()
+        mock_db_client_class.return_value = mock_db_client
+        mock_db_client.connect.return_value = True
+        mock_db_client.update_recipe.return_value = {
+            'id': 1,
+            'name': 'Updated Recipe Name',
+            'category': 'dinner',
+            'main_ingredients': [{'quantity': 250, 'unit': 'g', 'name': 'pasta'}],
+            'common_ingredients': ['salt', 'pepper'],
+            'instructions': 'Updated instructions',
+            'prep_time': 35,
+            'portions': 4
+        }
+        
+        # Test data
+        update_data = {
+            'name': 'Updated Recipe Name',
+            'prep_time': 35,
+            'instructions': 'Updated instructions'
+        }
+        
+        # Make request
+        response = client.patch("/recipes/1", json=update_data)
+        
+        # Assertions
+        assert response.status_code == 200
+        json_response = response.json()
+        assert json_response["name"] == "Updated Recipe Name"
+        assert json_response["prep_time"] == 35
+        assert json_response["instructions"] == "Updated instructions"
+        
+        # Verify mock calls
+        mock_db_client.connect.assert_called_once()
+        mock_db_client.update_recipe.assert_called_once()
+        call_args = mock_db_client.update_recipe.call_args
+        assert call_args[0][0] == 1  # recipe_id
+        assert call_args[0][1]['name'] == 'Updated Recipe Name'
+        assert call_args[0][1]['prep_time'] == 35
+        mock_db_client.disconnect.assert_called_once()
+    
+    @patch('app.main.DatabaseClient')
+    def test_update_recipe_not_found(self, mock_db_client_class):
+        """Test update when recipe doesn't exist"""
+        # Setup mock to return None (recipe not found)
+        mock_db_client = Mock()
+        mock_db_client_class.return_value = mock_db_client
+        mock_db_client.connect.return_value = True
+        mock_db_client.update_recipe.return_value = None
+        
+        # Test data
+        update_data = {'name': 'Updated Recipe Name'}
+        
+        # Make request
+        response = client.patch("/recipes/999", json=update_data)
+        
+        # Assertions
+        assert response.status_code == 404
+        json_response = response.json()
+        assert "Recipe with ID 999 not found" in json_response["detail"]
+        
+        # Verify disconnect is still called
+        mock_db_client.disconnect.assert_called_once()
+    
+    @patch('app.main.DatabaseClient')
+    def test_update_recipe_connection_failure(self, mock_db_client_class):
+        """Test handling of database connection failure"""
+        # Setup mock to simulate connection failure
+        mock_db_client = Mock()
+        mock_db_client_class.return_value = mock_db_client
+        mock_db_client.connect.return_value = False
+        
+        # Test data
+        update_data = {'name': 'Updated Recipe Name'}
+        
+        # Make request
+        response = client.patch("/recipes/1", json=update_data)
+        
+        # Assertions
+        assert response.status_code == 500
+        json_response = response.json()
+        assert "Failed to connect to database" in json_response["detail"]
+        
+        # Verify disconnect is still called
+        mock_db_client.disconnect.assert_called_once()
+    
+    @patch('app.main.DatabaseClient')
+    def test_update_recipe_no_fields(self, mock_db_client_class):
+        """Test update with no fields provided"""
+        # Test data with empty payload
+        update_data = {}
+        
+        # Make request
+        response = client.patch("/recipes/1", json=update_data)
+        
+        # Assertions
+        assert response.status_code == 400
+        json_response = response.json()
+        assert "No fields provided for update" in json_response["detail"]
+    
+    @patch('app.main.DatabaseClient')
+    def test_update_recipe_with_ingredients(self, mock_db_client_class):
+        """Test update with main_ingredients"""
+        # Setup mock
+        mock_db_client = Mock()
+        mock_db_client_class.return_value = mock_db_client
+        mock_db_client.connect.return_value = True
+        mock_db_client.update_recipe.return_value = {
+            'id': 1,
+            'name': 'Test Recipe',
+            'category': 'dinner',
+            'main_ingredients': [{'quantity': 200, 'unit': 'g', 'name': 'rice'}],
+            'common_ingredients': ['garlic', 'onion'],
+            'instructions': 'Cook rice',
+            'prep_time': 25,
+            'portions': 2
+        }
+        
+        # Test data with ingredients - FastAPI will convert these to Pydantic objects
+        update_data = {
+            'main_ingredients': [
+                {'quantity': 200, 'unit': 'g', 'name': 'rice'}
+            ],
+            'common_ingredients': ['garlic', 'onion']
+        }
+        
+        # Make request - FastAPI will automatically convert JSON to RecipeUpdate model
+        response = client.patch("/recipes/1", json=update_data)
+        
+        # Assertions
+        assert response.status_code == 200
+        json_response = response.json()
+        assert json_response["main_ingredients"] == [{'quantity': 200, 'unit': 'g', 'name': 'rice'}]
+        assert json_response["common_ingredients"] == ['garlic', 'onion']
+        
+        # Verify the ingredients were properly converted to dicts in the call to update_recipe
+        call_args = mock_db_client.update_recipe.call_args
+        assert 'main_ingredients' in call_args[0][1]
+        assert isinstance(call_args[0][1]['main_ingredients'], list)
+        # The ingredients should be converted to dicts by the endpoint code
+        assert isinstance(call_args[0][1]['main_ingredients'][0], dict)
+        assert call_args[0][1]['main_ingredients'][0]['name'] == 'rice'
+    
+    @patch('app.main.DatabaseClient')
+    def test_update_recipe_database_error(self, mock_db_client_class):
+        """Test handling of database errors during update"""
+        # Setup mock to simulate database error
+        mock_db_client = Mock()
+        mock_db_client_class.return_value = mock_db_client
+        mock_db_client.connect.return_value = True
+        mock_db_client.update_recipe.side_effect = Exception("Database error")
+        
+        # Test data
+        update_data = {'name': 'Updated Recipe Name'}
+        
+        # Make request
+        response = client.patch("/recipes/1", json=update_data)
+        
+        # Assertions
+        assert response.status_code == 500
+        json_response = response.json()
+        assert "Error updating recipe" in json_response["detail"]
+        assert "Database error" in json_response["detail"]
+        
+        # Verify disconnect is still called
+        mock_db_client.disconnect.assert_called_once()
+    
+    def test_update_recipe_invalid_id(self):
+        """Test update with invalid recipe ID"""
+        # Test data
+        update_data = {'name': 'Updated Recipe Name'}
+        
+        # Make request with invalid ID
+        response = client.patch("/recipes/not-a-number", json=update_data)
+        
+        # Should return validation error
+        assert response.status_code == 422  # Unprocessable Entity
+        json_response = response.json()
+        assert "detail" in json_response
+    
+    def test_update_recipe_invalid_data_types(self):
+        """Test update with invalid data types"""
+        # Test data with invalid types
+        update_data = {
+            'prep_time': 'not-a-number',  # Should be int
+            'portions': 'also-not-a-number'  # Should be int
+        }
+        
+        # Make request
+        response = client.patch("/recipes/1", json=update_data)
+        
+        # Should return validation error
+        assert response.status_code == 422  # Unprocessable Entity
+        json_response = response.json()
+        assert "detail" in json_response
