@@ -4,6 +4,13 @@ Unit tests for API endpoints using mocks
 from unittest.mock import Mock, patch
 from fastapi.testclient import TestClient
 from app.main import app
+from .conftest import (
+    SAMPLE_RECIPE_1, SAMPLE_RECIPE_2, CREATE_RECIPE_DATA,
+    UPDATE_RECIPE_DATA, UPDATE_RECIPE_WITH_INGREDIENTS_DATA,
+    UPDATED_RECIPE_RESPONSE, UPDATED_RECIPE_WITH_INGREDIENTS_RESPONSE,
+    INVALID_RECIPE_DATA_MISSING_FIELDS, INVALID_RECIPE_DATA_INVALID_INGREDIENT,
+    INVALID_UPDATE_DATA_TYPES
+)
 
 
 # Create a test client
@@ -20,18 +27,7 @@ class TestGetAllRecipesEndpoint:
         mock_db_client = Mock()
         mock_db_client_class.return_value = mock_db_client
         mock_db_client.connect.return_value = True
-        mock_db_client.get_all_recipes.return_value = [
-            {
-                'id': 1,
-                'name': 'Test Recipe',
-                'category': 'dinner',
-                'main_ingredients': [{'quantity': 250, 'unit': 'g', 'name': 'pasta'}],
-                'common_ingredients': ['salt', 'pepper'],
-                'instructions': 'Cook it',
-                'prep_time': 30,
-                'portions': 4
-            }
-        ]
+        mock_db_client.get_all_recipes.return_value = [SAMPLE_RECIPE_1]
         
         # Make request
         response = client.get("/recipes")
@@ -100,32 +96,10 @@ class TestCreateRecipeEndpoint:
         mock_db_client = Mock()
         mock_db_client_class.return_value = mock_db_client
         mock_db_client.connect.return_value = True
-        mock_db_client.add_recipe.return_value = {
-            'id': 123,
-            'name': 'New Recipe',
-            'category': 'lunch',
-            'main_ingredients': [{'quantity': 200, 'unit': 'g', 'name': 'rice'}],
-            'common_ingredients': ['salt'],
-            'instructions': 'Cook rice',
-            'prep_time': 20,
-            'portions': 2
-        }
-        
-        # Prepare request data
-        recipe_data = {
-            "name": "New Recipe",
-            "category": "lunch",
-            "main_ingredients": [
-                {"quantity": 200, "unit": "g", "name": "rice"}
-            ],
-            "common_ingredients": ["salt"],
-            "instructions": "Cook rice",
-            "prep_time": 20,
-            "portions": 2
-        }
+        mock_db_client.add_recipe.return_value = SAMPLE_RECIPE_2
         
         # Make request
-        response = client.post("/recipes", json=recipe_data)
+        response = client.post("/recipes", json=CREATE_RECIPE_DATA)
         
         # Assertions
         assert response.status_code == 201
@@ -153,19 +127,8 @@ class TestCreateRecipeEndpoint:
         mock_db_client_class.return_value = mock_db_client
         mock_db_client.connect.return_value = False
         
-        # Prepare request data
-        recipe_data = {
-            "name": "New Recipe",
-            "category": "lunch",
-            "main_ingredients": [{"quantity": 200, "unit": "g", "name": "rice"}],
-            "common_ingredients": ["salt"],
-            "instructions": "Cook rice",
-            "prep_time": 20,
-            "portions": 2
-        }
-        
         # Make request
-        response = client.post("/recipes", json=recipe_data)
+        response = client.post("/recipes", json=CREATE_RECIPE_DATA)
         
         # Assertions - the HTTPException is raised directly, not caught by general exception handler
         assert response.status_code == 500
@@ -174,14 +137,8 @@ class TestCreateRecipeEndpoint:
     
     def test_create_recipe_invalid_data(self):
         """Test validation of invalid recipe data"""
-        # Invalid data - missing required fields
-        invalid_recipe_data = {
-            "name": "Incomplete Recipe",
-            # missing category, main_ingredients, etc.
-        }
-        
         # Make request
-        response = client.post("/recipes", json=invalid_recipe_data)
+        response = client.post("/recipes", json=INVALID_RECIPE_DATA_MISSING_FIELDS)
         
         # Should return validation error
         assert response.status_code == 422  # Unprocessable Entity
@@ -190,21 +147,8 @@ class TestCreateRecipeEndpoint:
     
     def test_create_recipe_invalid_ingredient(self):
         """Test validation of invalid ingredient data"""
-        # Invalid ingredient data
-        invalid_recipe_data = {
-            "name": "Recipe with Invalid Ingredient",
-            "category": "dinner",
-            "main_ingredients": [
-                {"quantity": "not-a-number", "unit": "g", "name": "pasta"}  # invalid quantity
-            ],
-            "common_ingredients": ["salt"],
-            "instructions": "Cook it",
-            "prep_time": 30,
-            "portions": 4
-        }
-        
         # Make request
-        response = client.post("/recipes", json=invalid_recipe_data)
+        response = client.post("/recipes", json=INVALID_RECIPE_DATA_INVALID_INGREDIENT)
         
         # Should return validation error
         assert response.status_code == 422
@@ -326,16 +270,7 @@ class TestGetRecipeByIdEndpoint:
         mock_db_client = Mock()
         mock_db_client_class.return_value = mock_db_client
         mock_db_client.connect.return_value = True
-        mock_db_client.get_recipe_by_id.return_value = {
-            'id': 1,
-            'name': 'Test Recipe',
-            'category': 'dinner',
-            'main_ingredients': [{'quantity': 250, 'unit': 'g', 'name': 'pasta'}],
-            'common_ingredients': ['salt', 'pepper'],
-            'instructions': 'Cook it',
-            'prep_time': 30,
-            'portions': 4
-        }
+        mock_db_client.get_recipe_by_id.return_value = SAMPLE_RECIPE_1
         
         # Make request
         response = client.get("/recipes/1")
@@ -444,26 +379,10 @@ class TestUpdateRecipeEndpoint:
         mock_db_client = Mock()
         mock_db_client_class.return_value = mock_db_client
         mock_db_client.connect.return_value = True
-        mock_db_client.update_recipe.return_value = {
-            'id': 1,
-            'name': 'Updated Recipe Name',
-            'category': 'dinner',
-            'main_ingredients': [{'quantity': 250, 'unit': 'g', 'name': 'pasta'}],
-            'common_ingredients': ['salt', 'pepper'],
-            'instructions': 'Updated instructions',
-            'prep_time': 35,
-            'portions': 4
-        }
-        
-        # Test data
-        update_data = {
-            'name': 'Updated Recipe Name',
-            'prep_time': 35,
-            'instructions': 'Updated instructions'
-        }
+        mock_db_client.update_recipe.return_value = UPDATED_RECIPE_RESPONSE
         
         # Make request
-        response = client.patch("/recipes/1", json=update_data)
+        response = client.patch("/recipes/1", json=UPDATE_RECIPE_DATA)
         
         # Assertions
         assert response.status_code == 200
@@ -547,27 +466,10 @@ class TestUpdateRecipeEndpoint:
         mock_db_client = Mock()
         mock_db_client_class.return_value = mock_db_client
         mock_db_client.connect.return_value = True
-        mock_db_client.update_recipe.return_value = {
-            'id': 1,
-            'name': 'Test Recipe',
-            'category': 'dinner',
-            'main_ingredients': [{'quantity': 200, 'unit': 'g', 'name': 'rice'}],
-            'common_ingredients': ['garlic', 'onion'],
-            'instructions': 'Cook rice',
-            'prep_time': 25,
-            'portions': 2
-        }
-        
-        # Test data with ingredients - FastAPI will convert these to Pydantic objects
-        update_data = {
-            'main_ingredients': [
-                {'quantity': 200, 'unit': 'g', 'name': 'rice'}
-            ],
-            'common_ingredients': ['garlic', 'onion']
-        }
+        mock_db_client.update_recipe.return_value = UPDATED_RECIPE_WITH_INGREDIENTS_RESPONSE
         
         # Make request - FastAPI will automatically convert JSON to RecipeUpdate model
-        response = client.patch("/recipes/1", json=update_data)
+        response = client.patch("/recipes/1", json=UPDATE_RECIPE_WITH_INGREDIENTS_DATA)
         
         # Assertions
         assert response.status_code == 200
@@ -622,14 +524,8 @@ class TestUpdateRecipeEndpoint:
     
     def test_update_recipe_invalid_data_types(self):
         """Test update with invalid data types"""
-        # Test data with invalid types
-        update_data = {
-            'prep_time': 'not-a-number',  # Should be int
-            'portions': 'also-not-a-number'  # Should be int
-        }
-        
         # Make request
-        response = client.patch("/recipes/1", json=update_data)
+        response = client.patch("/recipes/1", json=INVALID_UPDATE_DATA_TYPES)
         
         # Should return validation error
         assert response.status_code == 422  # Unprocessable Entity
