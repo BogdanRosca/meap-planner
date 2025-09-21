@@ -15,7 +15,7 @@ client = TestClient(app)
 class TestGetAllRecipesEndpoint:
     """Test the GET /recipes endpoint"""
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_get_all_recipes_success(self, mock_db_client_class):
         """Test successful retrieval of all recipes"""
         # Setup mock
@@ -51,7 +51,7 @@ class TestGetAllRecipesEndpoint:
         mock_db_client.get_all_recipes.assert_called_once()
         mock_db_client.disconnect.assert_called_once()
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_get_all_recipes_connection_failure(self, mock_db_client_class):
         """Test handling of database connection failure"""
         # Setup mock to simulate connection failure
@@ -70,7 +70,7 @@ class TestGetAllRecipesEndpoint:
         # Verify disconnect is still called
         mock_db_client.disconnect.assert_called_once()
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_get_all_recipes_database_error(self, mock_db_client_class):
         """Test handling of database errors during recipe retrieval"""
         # Setup mock to simulate database error
@@ -95,7 +95,7 @@ class TestGetAllRecipesEndpoint:
 class TestCreateRecipeEndpoint:
     """Test the POST /recipes endpoint"""
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_create_recipe_success(self, mock_db_client_class):
         """Test successful recipe creation"""
         # Setup mock
@@ -147,7 +147,7 @@ class TestCreateRecipeEndpoint:
         assert call_args[1]['category'] == 'lunch'
         assert call_args[1]['main_ingredients'] == [{'quantity': 200.0, 'unit': 'g', 'name': 'rice'}]
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_create_recipe_connection_failure(self, mock_db_client_class):
         """Test handling of database connection failure during recipe creation"""
         # Setup mock
@@ -217,7 +217,7 @@ class TestCreateRecipeEndpoint:
 class TestDeleteRecipeEndpoint:
     """Test the DELETE /recipes/{recipe_id} endpoint"""
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_delete_recipe_success(self, mock_db_client_class):
         """Test successful recipe deletion"""
         # Setup mock
@@ -241,7 +241,7 @@ class TestDeleteRecipeEndpoint:
         mock_db_client.delete_recipe.assert_called_once_with(123)
         mock_db_client.disconnect.assert_called_once()
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_delete_recipe_not_found(self, mock_db_client_class):
         """Test deletion of non-existent recipe"""
         # Setup mock
@@ -263,7 +263,7 @@ class TestDeleteRecipeEndpoint:
         mock_db_client.delete_recipe.assert_called_once_with(999)
         mock_db_client.disconnect.assert_called_once()
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_delete_recipe_connection_failure(self, mock_db_client_class):
         """Test handling of database connection failure during recipe deletion"""
         # Setup mock
@@ -284,7 +284,7 @@ class TestDeleteRecipeEndpoint:
         mock_db_client.delete_recipe.assert_not_called()  # Should not be called if connection fails
         mock_db_client.disconnect.assert_called_once()
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_delete_recipe_database_error(self, mock_db_client_class):
         """Test handling of database error during recipe deletion"""
         # Setup mock
@@ -321,7 +321,7 @@ class TestDeleteRecipeEndpoint:
 class TestGetRecipeByIdEndpoint:
     """Test the GET /recipes/{recipe_id} endpoint"""
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_get_recipe_by_id_success(self, mock_db_client_class):
         """Test successful retrieval of a recipe by ID"""
         # Setup mock
@@ -359,7 +359,7 @@ class TestGetRecipeByIdEndpoint:
         mock_db_client.get_recipe_by_id.assert_called_once_with(1)
         mock_db_client.disconnect.assert_called_once()
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_get_recipe_by_id_not_found(self, mock_db_client_class):
         """Test retrieval of non-existent recipe"""
         # Setup mock
@@ -381,7 +381,7 @@ class TestGetRecipeByIdEndpoint:
         mock_db_client.get_recipe_by_id.assert_called_once_with(999)
         mock_db_client.disconnect.assert_called_once()
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_get_recipe_by_id_database_connection_error(self, mock_db_client_class):
         """Test recipe retrieval when database connection fails"""
         # Setup mock
@@ -402,7 +402,7 @@ class TestGetRecipeByIdEndpoint:
         mock_db_client.get_recipe_by_id.assert_not_called()
         mock_db_client.disconnect.assert_called_once()
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_get_recipe_by_id_database_error(self, mock_db_client_class):
         """Test recipe retrieval when database operation fails"""
         # Setup mock
@@ -439,7 +439,7 @@ class TestGetRecipeByIdEndpoint:
 class TestUpdateRecipeEndpoint:
     """Test the PATCH /recipes/{recipe_id} endpoint"""
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_update_recipe_success(self, mock_db_client_class):
         """Test successful recipe update"""
         # Setup mock
@@ -483,7 +483,7 @@ class TestUpdateRecipeEndpoint:
         assert call_args[0][1]['prep_time'] == 35
         mock_db_client.disconnect.assert_called_once()
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_update_recipe_not_found(self, mock_db_client_class):
         """Test update when recipe doesn't exist"""
         # Setup mock to return None (recipe not found)
@@ -506,7 +506,7 @@ class TestUpdateRecipeEndpoint:
         # Verify disconnect is still called
         mock_db_client.disconnect.assert_called_once()
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_update_recipe_connection_failure(self, mock_db_client_class):
         """Test handling of database connection failure"""
         # Setup mock to simulate connection failure
@@ -528,7 +528,7 @@ class TestUpdateRecipeEndpoint:
         # Verify disconnect is still called
         mock_db_client.disconnect.assert_called_once()
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_update_recipe_no_fields(self, mock_db_client_class):
         """Test update with no fields provided"""
         # Test data with empty payload
@@ -542,7 +542,7 @@ class TestUpdateRecipeEndpoint:
         json_response = response.json()
         assert "No fields provided for update" in json_response["detail"]
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_update_recipe_with_ingredients(self, mock_db_client_class):
         """Test update with main_ingredients"""
         # Setup mock
@@ -585,7 +585,7 @@ class TestUpdateRecipeEndpoint:
         assert isinstance(call_args[0][1]['main_ingredients'][0], dict)
         assert call_args[0][1]['main_ingredients'][0]['name'] == 'rice'
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_update_recipe_database_error(self, mock_db_client_class):
         """Test handling of database errors during update"""
         # Setup mock to simulate database error

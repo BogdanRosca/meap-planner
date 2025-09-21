@@ -16,7 +16,7 @@ client = TestClient(app)
 class TestErrorHandling:
     """Test error handling across the application"""
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_get_recipes_unexpected_exception(self, mock_db_client_class):
         """Test handling of unexpected exceptions in get_all_recipes"""
         # Setup mock to raise unexpected exception
@@ -37,7 +37,7 @@ class TestErrorHandling:
         # Ensure cleanup happens
         mock_db_client.disconnect.assert_called_once()
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_create_recipe_unexpected_exception(self, mock_db_client_class):
         """Test handling of unexpected exceptions in create_recipe"""
         # Setup mock to raise unexpected exception
@@ -73,7 +73,7 @@ class TestErrorHandling:
 class TestEdgeCases:
     """Test edge cases and boundary conditions"""
     
-    @patch('app.main.DatabaseClient')
+    @patch('app.routes.recipes.DatabaseClient')
     def test_get_recipes_empty_result(self, mock_db_client_class):
         """Test handling when database returns empty recipe list"""
         # Setup mock to return empty list
@@ -108,7 +108,7 @@ class TestEdgeCases:
             "portions": 1  # Minimum portions
         }
         
-        with patch('app.main.DatabaseClient') as mock_db_client_class:
+        with patch('app.routes.recipes.DatabaseClient') as mock_db_client_class:
             mock_db_client = Mock()
             mock_db_client_class.return_value = mock_db_client
             mock_db_client.connect.return_value = True
@@ -134,7 +134,7 @@ class TestEdgeCases:
             "portions": 6
         }
         
-        with patch('app.main.DatabaseClient') as mock_db_client_class:
+        with patch('app.routes.recipes.DatabaseClient') as mock_db_client_class:
             mock_db_client = Mock()
             mock_db_client_class.return_value = mock_db_client
             mock_db_client.connect.return_value = True
@@ -165,7 +165,7 @@ class TestEdgeCases:
             "portions": 8
         }
         
-        with patch('app.main.DatabaseClient') as mock_db_client_class:
+        with patch('app.routes.recipes.DatabaseClient') as mock_db_client_class:
             mock_db_client = Mock()
             mock_db_client_class.return_value = mock_db_client
             mock_db_client.connect.return_value = True

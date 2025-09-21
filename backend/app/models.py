@@ -21,16 +21,6 @@ class RecipeCreate(BaseModel):
     portions: int
 
 
-class RecipeUpdate(BaseModel):
-    name: Optional[str] = None
-    category: Optional[str] = None
-    main_ingredients: Optional[List[Ingredient]] = None
-    common_ingredients: Optional[List[str]] = None
-    instructions: Optional[str] = None
-    prep_time: Optional[int] = None
-    portions: Optional[int] = None
-
-
 class RecipeResponse(BaseModel):
     id: int
     name: str
@@ -46,3 +36,15 @@ class NewRecipeResponse(BaseModel):
     id: int
     status: str
     message: str
+
+    
+class RecipeUpdate(BaseModel):
+    name: Optional[str] = None
+    category: Optional[str] = None
+    main_ingredients: Optional[List[Ingredient]] = None
+    common_ingredients: Optional[List[str]] = None
+    instructions: Optional[str] = None
+    prep_time: Optional[int] = None
+    portions: Optional[int] = None
+
+
