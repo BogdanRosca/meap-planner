@@ -5,8 +5,11 @@ max-line-length = 127
 # Maximum cyclomatic complexity
 max-complexity = 10
 
-# Error codes to always report (critical errors)
-select = E9,F63,F7,F82
+# Error codes to check (balanced approach for CI/CD)
+# E: Critical pycodestyle errors (syntax, indentation, imports)
+# F: pyflakes errors (undefined names, unused imports, etc.)
+# W: Selected warnings (not all to avoid being too strict)
+select = E,F,W292,W391
 
 # Directories to check
 include = app,tests
@@ -29,9 +32,11 @@ count = True
 # Print total number of errors and warnings to stderr
 statistics = True
 
-# Don't halt execution on first error
+# Ignore some warnings that are too strict for CI
 ignore = 
-    # Line too long (handled by max-line-length)
+    # Blank line contains whitespace (too many existing cases)
+    W293,
+    # Line too long (handled by max-line-length) 
     E501,
-    # Multiple imports on one line (sometimes needed)
-    E401
+    # Trailing whitespace (too strict for CI)
+    W291
