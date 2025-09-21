@@ -110,3 +110,37 @@ def create_recipe(recipe: RecipeCreate):
     finally:
         # Always disconnect
         db_client.disconnect()
+
+@app.delete("/recipes/{recipe_id}")
+def delete_recipe(recipe_id: int):
+    """Delete a recipe by ID"""
+    # Create database client
+    db_client = DatabaseClient()
+    
+    try:
+        # Connect to database
+        if not db_client.connect():
+            raise HTTPException(status_code=500, detail="Failed to connect to database")
+        
+        # Attempt to delete the recipe
+        success = db_client.delete_recipe(recipe_id)
+        
+        if not success:
+            raise HTTPException(status_code=404, detail=f"Recipe with ID {recipe_id} not found")
+        
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "status": "success",
+                "message": f"Recipe with ID {recipe_id} deleted successfully"
+            }
+        )
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting recipe: {str(e)}")
+    
+    finally:
+        # Always disconnect
+        db_client.disconnect()

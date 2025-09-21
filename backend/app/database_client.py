@@ -121,3 +121,26 @@ class DatabaseClient:
         self._connection.commit()
         cursor.close()
         return recipe
+    
+    def delete_recipe(self, recipe_id: int) -> bool:
+        """Delete a recipe from the database by ID"""
+        if not self.is_connected():
+            raise Exception("Not connected to database")
+        
+        cursor = self._connection.cursor()
+        
+        # First check if the recipe exists
+        cursor.execute("SELECT id FROM recipes WHERE id = %s", (recipe_id,))
+        if not cursor.fetchone():
+            cursor.close()
+            return False
+        
+        # Delete the recipe
+        cursor.execute("DELETE FROM recipes WHERE id = %s", (recipe_id,))
+        
+        # Commit the transaction
+        self._connection.commit()
+        rows_affected = cursor.rowcount
+        cursor.close()
+        
+        return rows_affected > 0

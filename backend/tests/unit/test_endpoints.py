@@ -212,3 +212,107 @@ class TestCreateRecipeEndpoint:
         assert response.status_code == 422
         json_response = response.json()
         assert "detail" in json_response
+
+
+class TestDeleteRecipeEndpoint:
+    """Test the DELETE /recipes/{recipe_id} endpoint"""
+    
+    @patch('app.main.DatabaseClient')
+    def test_delete_recipe_success(self, mock_db_client_class):
+        """Test successful recipe deletion"""
+        # Setup mock
+        mock_db_client = Mock()
+        mock_db_client_class.return_value = mock_db_client
+        mock_db_client.connect.return_value = True
+        mock_db_client.delete_recipe.return_value = True
+        
+        # Make request
+        response = client.delete("/recipes/123")
+        
+        # Assertions
+        assert response.status_code == 200
+        json_response = response.json()
+        assert json_response["status"] == "success"
+        assert "deleted successfully" in json_response["message"]
+        assert "123" in json_response["message"]
+        
+        # Verify mock calls
+        mock_db_client.connect.assert_called_once()
+        mock_db_client.delete_recipe.assert_called_once_with(123)
+        mock_db_client.disconnect.assert_called_once()
+    
+    @patch('app.main.DatabaseClient')
+    def test_delete_recipe_not_found(self, mock_db_client_class):
+        """Test deletion of non-existent recipe"""
+        # Setup mock
+        mock_db_client = Mock()
+        mock_db_client_class.return_value = mock_db_client
+        mock_db_client.connect.return_value = True
+        mock_db_client.delete_recipe.return_value = False  # Recipe not found
+        
+        # Make request
+        response = client.delete("/recipes/999")
+        
+        # Assertions
+        assert response.status_code == 404
+        json_response = response.json()
+        assert "Recipe with ID 999 not found" in json_response["detail"]
+        
+        # Verify mock calls
+        mock_db_client.connect.assert_called_once()
+        mock_db_client.delete_recipe.assert_called_once_with(999)
+        mock_db_client.disconnect.assert_called_once()
+    
+    @patch('app.main.DatabaseClient')
+    def test_delete_recipe_connection_failure(self, mock_db_client_class):
+        """Test handling of database connection failure during recipe deletion"""
+        # Setup mock
+        mock_db_client = Mock()
+        mock_db_client_class.return_value = mock_db_client
+        mock_db_client.connect.return_value = False
+        
+        # Make request
+        response = client.delete("/recipes/123")
+        
+        # Assertions
+        assert response.status_code == 500
+        json_response = response.json()
+        assert "Failed to connect to database" in json_response["detail"]
+        
+        # Verify mock calls
+        mock_db_client.connect.assert_called_once()
+        mock_db_client.delete_recipe.assert_not_called()  # Should not be called if connection fails
+        mock_db_client.disconnect.assert_called_once()
+    
+    @patch('app.main.DatabaseClient')
+    def test_delete_recipe_database_error(self, mock_db_client_class):
+        """Test handling of database error during recipe deletion"""
+        # Setup mock
+        mock_db_client = Mock()
+        mock_db_client_class.return_value = mock_db_client
+        mock_db_client.connect.return_value = True
+        mock_db_client.delete_recipe.side_effect = Exception("Database error")
+        
+        # Make request
+        response = client.delete("/recipes/123")
+        
+        # Assertions
+        assert response.status_code == 500
+        json_response = response.json()
+        assert "Error deleting recipe" in json_response["detail"]
+        assert "Database error" in json_response["detail"]
+        
+        # Verify mock calls
+        mock_db_client.connect.assert_called_once()
+        mock_db_client.delete_recipe.assert_called_once_with(123)
+        mock_db_client.disconnect.assert_called_once()
+    
+    def test_delete_recipe_invalid_id(self):
+        """Test deletion with invalid recipe ID"""
+        # Make request with invalid ID (non-integer)
+        response = client.delete("/recipes/not-a-number")
+        
+        # Should return validation error
+        assert response.status_code == 422  # Unprocessable Entity
+        json_response = response.json()
+        assert "detail" in json_response

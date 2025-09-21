@@ -242,6 +242,113 @@ class TestDatabaseClientAddRecipe:
         assert "Not connected to database" in str(exc_info.value)
 
 
+class TestDatabaseClientDeleteRecipe:
+    """Test DatabaseClient delete_recipe method"""
+    
+    def test_delete_recipe_success(self):
+        """Test successful recipe deletion"""
+        client = DatabaseClient()
+        mock_connection = Mock()
+        client._connection = mock_connection
+        
+        # Mock cursor and its methods
+        mock_cursor = Mock()
+        mock_connection.cursor.return_value = mock_cursor
+        
+        # Mock is_connected to return True
+        with patch.object(client, 'is_connected', return_value=True):
+            # Mock that recipe exists (fetchone returns a row)
+            mock_cursor.fetchone.return_value = (123,)  # Recipe exists
+            mock_cursor.rowcount = 1  # One row was deleted
+            
+            # Call delete_recipe
+            result = client.delete_recipe(123)
+        
+        # Assertions
+        assert result is True
+        
+        # Verify SQL execution
+        assert mock_cursor.execute.call_count == 2  # One SELECT, one DELETE
+        
+        # Check first call (SELECT to verify existence)
+        first_call = mock_cursor.execute.call_args_list[0]
+        assert "SELECT id FROM recipes WHERE id = %s" in first_call[0][0]
+        assert first_call[0][1] == (123,)
+        
+        # Check second call (DELETE)
+        second_call = mock_cursor.execute.call_args_list[1]
+        assert "DELETE FROM recipes WHERE id = %s" in second_call[0][0]
+        assert second_call[0][1] == (123,)
+        
+        mock_connection.commit.assert_called_once()
+        mock_cursor.close.assert_called_once()
+    
+    def test_delete_recipe_not_found(self):
+        """Test deleting a non-existent recipe"""
+        client = DatabaseClient()
+        mock_connection = Mock()
+        client._connection = mock_connection
+        
+        # Mock cursor and its methods
+        mock_cursor = Mock()
+        mock_connection.cursor.return_value = mock_cursor
+        
+        # Mock is_connected to return True
+        with patch.object(client, 'is_connected', return_value=True):
+            # Mock that recipe doesn't exist (fetchone returns None)
+            mock_cursor.fetchone.return_value = None
+            
+            # Call delete_recipe
+            result = client.delete_recipe(999)
+        
+        # Assertions
+        assert result is False
+        
+        # Verify only SELECT was executed (not DELETE)
+        assert mock_cursor.execute.call_count == 1
+        select_call = mock_cursor.execute.call_args_list[0]
+        assert "SELECT id FROM recipes WHERE id = %s" in select_call[0][0]
+        assert select_call[0][1] == (999,)
+        
+        # Commit should not be called since no deletion occurred
+        mock_connection.commit.assert_not_called()
+        mock_cursor.close.assert_called_once()
+    
+    def test_delete_recipe_not_connected(self):
+        """Test delete_recipe when not connected to database"""
+        client = DatabaseClient()
+        client._connection = None
+        
+        # Mock is_connected to return False
+        with patch.object(client, 'is_connected', return_value=False):
+            with pytest.raises(Exception) as exc_info:
+                client.delete_recipe(123)
+        
+        assert "Not connected to database" in str(exc_info.value)
+    
+    def test_delete_recipe_no_rows_affected(self):
+        """Test delete_recipe when no rows are affected despite recipe existing"""
+        client = DatabaseClient()
+        mock_connection = Mock()
+        client._connection = mock_connection
+        
+        # Mock cursor and its methods
+        mock_cursor = Mock()
+        mock_connection.cursor.return_value = mock_cursor
+        
+        # Mock is_connected to return True
+        with patch.object(client, 'is_connected', return_value=True):
+            # Mock that recipe exists but deletion affects 0 rows (edge case)
+            mock_cursor.fetchone.return_value = (123,)  # Recipe exists
+            mock_cursor.rowcount = 0  # No rows were deleted (edge case)
+            
+            # Call delete_recipe
+            result = client.delete_recipe(123)
+        
+        # Assertions
+        assert result is False
+
+
 class TestDatabaseClientInitialization:
     """Test DatabaseClient initialization"""
     
