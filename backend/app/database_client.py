@@ -3,6 +3,7 @@ Database client for the Meal Planner application.
 Handles all database connections and operations.
 """
 import os
+import json
 import psycopg2
 from typing import Optional, List, Dict, Any
 from dotenv import load_dotenv
@@ -65,7 +66,7 @@ class DatabaseClient:
         
         cursor = self._connection.cursor()
         cursor.execute("""
-            SELECT id, name, category, ingredients, instructions, prep_time, portions
+            SELECT id, name, category, main_ingredients, common_ingredients, instructions, prep_time, portions
             FROM recipes
             ORDER BY id
         """)
@@ -76,12 +77,47 @@ class DatabaseClient:
                 'id': row[0],
                 'name': row[1],
                 'category': row[2],
-                'ingredients': row[3],
-                'instructions': row[4],
-                'prep_time': row[5],
-                'portions': row[6]
+                'main_ingredients': row[3],
+                'common_ingredients': row[4],
+                'instructions': row[5],
+                'prep_time': row[6],
+                'portions': row[7]
             }
             recipes.append(recipe)
         
         cursor.close()
         return recipes
+    
+    def add_recipe(self, name: str, category: str, main_ingredients: List[Dict[str, Any]], 
+                   common_ingredients: List[str], instructions: str, prep_time: int, portions: int) -> Dict[str, Any]:
+        """Add a new recipe to the database"""
+        if not self.is_connected():
+            raise Exception("Not connected to database")
+        
+        # Convert main_ingredients list of dicts to JSON
+        main_ingredients_json = json.dumps(main_ingredients)
+        
+        cursor = self._connection.cursor()
+        cursor.execute("""
+            INSERT INTO recipes (name, category, main_ingredients, common_ingredients, instructions, prep_time, portions)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            RETURNING id, name, category, main_ingredients, common_ingredients, instructions, prep_time, portions
+        """, (name, category, main_ingredients_json, common_ingredients, instructions, prep_time, portions))
+        
+        # Fetch the inserted recipe
+        row = cursor.fetchone()
+        recipe = {
+            'id': row[0],
+            'name': row[1],
+            'category': row[2],
+            'main_ingredients': row[3],
+            'common_ingredients': row[4],
+            'instructions': row[5],
+            'prep_time': row[6],
+            'portions': row[7]
+        }
+        
+        # Commit the transaction
+        self._connection.commit()
+        cursor.close()
+        return recipe

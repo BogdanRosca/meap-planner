@@ -41,19 +41,33 @@ runs:
         PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE USER \"$DB_USER\" WITH PASSWORD '$DB_PASSWORD';"
         PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE $DB_NAME OWNER \"$DB_USER\";"
         
-        # Create recipes table
+        # Create recipes table with updated schema
         PGPASSWORD="$DB_PASSWORD" psql -h localhost -U "$DB_USER" -d "$DB_NAME" -c "
         CREATE TABLE IF NOT EXISTS recipes (
           id SERIAL PRIMARY KEY,
           name VARCHAR(255) NOT NULL,
-          category VARCHAR(20),
-          ingredients TEXT NOT NULL,
+          category VARCHAR(20) CHECK (category IN ('breakfast', 'lunch', 'dinner', 'snack')),
+          main_ingredients JSONB,
+          common_ingredients TEXT[] DEFAULT '{}',
           instructions TEXT NOT NULL,
           prep_time INTEGER,
           portions INTEGER
         );"
 
-        # Insert sample recipe
+        # Insert sample recipe with structured ingredients
         PGPASSWORD="$DB_PASSWORD" psql -h localhost -U "$DB_USER" -d "$DB_NAME" -c "
-        INSERT INTO recipes (name, category, ingredients, instructions, prep_time, portions) 
-        VALUES ('Scrambled Eggs', 'breakfast', '2 eggs, 1 tbsp butter, salt, pepper', 'Beat eggs, heat butter in pan, add eggs and scramble gently', 5, 1);"
+        INSERT INTO recipes (name, category, main_ingredients, common_ingredients, instructions, prep_time, portions) 
+        VALUES (
+          'Test Pasta', 
+          'dinner', 
+          '[
+            {\"name\": \"pasta\", \"unit\": \"g\", \"quantity\": 250},
+            {\"name\": \"tomato\", \"unit\": \"g\", \"quantity\": 500},
+            {\"name\": \"onion\", \"unit\": \"pcs\", \"quantity\": 1},
+            {\"name\": \"burrata\", \"unit\": \"pcs\", \"quantity\": 1}
+          ]'::jsonb,
+          ARRAY['salt', 'pepper', 'basil', 'olive', 'garlic'],
+          'Cook pasta and add oil',
+          15,
+          2
+        );"
