@@ -1,8 +1,6 @@
 """
 Tests for database client add_recipe functionality
 """
-import pytest
-from app.database_client import DatabaseClient
 from .conftest import TEST_RECIPE_DATA
 
 

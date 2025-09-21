@@ -9,6 +9,7 @@ from ..models import RecipeCreate, RecipeUpdate, RecipeResponse, NewRecipeRespon
 # Create router for recipe endpoints
 router = APIRouter(prefix="/recipes", tags=["recipes"])
 
+
 @router.get("")
 def get_all_recipes():
     """Get all recipes from the database"""
@@ -38,6 +39,7 @@ def get_all_recipes():
         # Always disconnect
         db_client.disconnect()
 
+
 @router.get("/{recipe_id}", response_model=RecipeResponse)
 def get_recipe_by_id(recipe_id: int):
     """Get a specific recipe by ID"""
@@ -65,6 +67,7 @@ def get_recipe_by_id(recipe_id: int):
     finally:
         # Always disconnect
         db_client.disconnect()
+
 
 @router.post("", response_model=NewRecipeResponse)
 def create_recipe(recipe: RecipeCreate):
@@ -109,6 +112,7 @@ def create_recipe(recipe: RecipeCreate):
         # Always disconnect
         db_client.disconnect()
 
+
 @router.patch("/{recipe_id}", response_model=RecipeResponse)
 def update_recipe(recipe_id: int, recipe_update: RecipeUpdate):
     """Update a recipe by ID with partial data"""
@@ -147,6 +151,7 @@ def update_recipe(recipe_id: int, recipe_update: RecipeUpdate):
     finally:
         # Always disconnect
         db_client.disconnect()
+
 
 @router.delete("/{recipe_id}")
 def delete_recipe(recipe_id: int):

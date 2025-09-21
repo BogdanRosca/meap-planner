@@ -1,10 +1,8 @@
 """
 Unit tests for error handling and edge cases
 """
-import pytest
 from unittest.mock import Mock, patch
 from fastapi.testclient import TestClient
-from fastapi import HTTPException
 from app.main import app
 from app.database_client import DatabaseClient
 

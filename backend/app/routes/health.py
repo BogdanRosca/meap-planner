@@ -6,6 +6,7 @@ from fastapi import APIRouter
 # Create router for health endpoints
 router = APIRouter(prefix="/health", tags=["health"])
 
+
 @router.get("")
 def health_check():
     """Health check endpoint to verify the API is running"""

@@ -2,7 +2,7 @@
 Unit tests for DatabaseClient methods using mocks
 """
 import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 import psycopg2
 from app.database_client import DatabaseClient
 

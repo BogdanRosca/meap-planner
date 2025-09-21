@@ -1,8 +1,6 @@
 """
 Tests for database client connection functionality
 """
-import pytest
-from app.database_client import DatabaseClient
 
 
 class TestDatabaseConnection:

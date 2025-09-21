@@ -46,5 +46,3 @@ class RecipeUpdate(BaseModel):
     instructions: Optional[str] = None
     prep_time: Optional[int] = None
     portions: Optional[int] = None
-
-

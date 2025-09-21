@@ -1,8 +1,6 @@
 """
 Tests for database client get_all_recipes functionality
 """
-import pytest
-from app.database_client import DatabaseClient
 
 
 class TestGetAllRecipes:

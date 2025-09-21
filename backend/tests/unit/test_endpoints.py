@@ -1,10 +1,8 @@
 """
 Unit tests for API endpoints using mocks
 """
-import pytest
 from unittest.mock import Mock, patch
 from fastapi.testclient import TestClient
-from fastapi import HTTPException
 from app.main import app
 
 

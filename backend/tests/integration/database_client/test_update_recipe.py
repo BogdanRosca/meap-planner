@@ -1,8 +1,6 @@
 """
 Integration tests for update recipe functionality
 """
-import pytest
-from app.database_client import DatabaseClient
 
 
 class TestUpdateRecipeIntegration:
