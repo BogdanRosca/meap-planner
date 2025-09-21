@@ -134,7 +134,7 @@ class TestCreateRecipeEndpoint:
         json_response = response.json()
         assert json_response["status"] == "success"
         assert json_response["message"] == "Recipe created successfully"
-        assert json_response["recipe_id"] == 123
+        assert json_response["id"] == 123
         
         # Verify mock calls
         mock_db_client.connect.assert_called_once()

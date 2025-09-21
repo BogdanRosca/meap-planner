@@ -1,5 +1,5 @@
 from .database_client import DatabaseClient
-from .models import Ingredient, RecipeCreate, RecipeUpdate, RecipeResponse
+from .models import Ingredient, RecipeCreate, RecipeUpdate, RecipeResponse, NewRecipeResponse
 from fastapi import FastAPI, HTTPException
 from fastapi import status
 from fastapi.responses import JSONResponse
@@ -69,7 +69,7 @@ def get_recipe_by_id(recipe_id: int):
         # Always disconnect
         db_client.disconnect()
 
-@app.post("/recipes", response_model=RecipeResponse)
+@app.post("/recipes", response_model=NewRecipeResponse)
 def create_recipe(recipe: RecipeCreate):
     """Create a new recipe in the database"""
     # Create database client
@@ -97,7 +97,7 @@ def create_recipe(recipe: RecipeCreate):
         return JSONResponse(
             status_code=status.HTTP_201_CREATED,
             content={
-                "recipe_id": new_recipe["id"],
+                "id": new_recipe["id"],
                 "status": "success",
                 "message": "Recipe created successfully"
             }

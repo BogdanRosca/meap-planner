@@ -40,3 +40,9 @@ class RecipeResponse(BaseModel):
     instructions: str
     prep_time: int
     portions: int
+
+
+class NewRecipeResponse(BaseModel):
+    id: int
+    status: str
+    message: str
