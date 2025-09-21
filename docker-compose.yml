@@ -1,0 +1,24 @@
+services:
+  # Backend API (connects to local database)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # Connect to local database on host machine
+      - DB_HOST=host.docker.internal
+      - DB_PORT=5432
+      - DB_NAME=mealplanner
+      - DB_USER=bogdan.rosca
+      - DB_PASSWORD=02CZj1H5nFdokHE
+      - PYTHONPATH=/app
+    volumes:
+      - ./backend:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    network_mode: "bridge"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
