@@ -1,0 +1,37 @@
+[flake8]
+# Maximum line length
+max-line-length = 127
+
+# Maximum cyclomatic complexity
+max-complexity = 10
+
+# Error codes to always report (critical errors)
+select = E9,F63,F7,F82
+
+# Directories to check
+include = app,tests
+
+# Files/directories to ignore
+exclude = 
+    __pycache__,
+    .git,
+    .pytest_cache,
+    venv,
+    .venv,
+    migrations
+
+# Show source code for each error
+show-source = True
+
+# Count the number of occurrences of each error/warning code
+count = True
+
+# Print total number of errors and warnings to stderr
+statistics = True
+
+# Don't halt execution on first error
+ignore = 
+    # Line too long (handled by max-line-length)
+    E501,
+    # Multiple imports on one line (sometimes needed)
+    E401
