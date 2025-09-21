@@ -88,6 +88,37 @@ class DatabaseClient:
         cursor.close()
         return recipes
     
+    def get_recipe_by_id(self, recipe_id: int) -> Optional[Dict[str, Any]]:
+        """Get a specific recipe by ID from the database"""
+        if not self.is_connected():
+            raise Exception("Not connected to database")
+        
+        cursor = self._connection.cursor()
+        cursor.execute("""
+            SELECT id, name, category, main_ingredients, common_ingredients, instructions, prep_time, portions
+            FROM recipes
+            WHERE id = %s
+        """, (recipe_id,))
+        
+        row = cursor.fetchone()
+        cursor.close()
+        
+        if not row:
+            return None
+        
+        recipe = {
+            'id': row[0],
+            'name': row[1],
+            'category': row[2],
+            'main_ingredients': row[3],
+            'common_ingredients': row[4],
+            'instructions': row[5],
+            'prep_time': row[6],
+            'portions': row[7]
+        }
+        
+        return recipe
+    
     def add_recipe(self, name: str, category: str, main_ingredients: List[Dict[str, Any]], 
                    common_ingredients: List[str], instructions: str, prep_time: int, portions: int) -> Dict[str, Any]:
         """Add a new recipe to the database"""

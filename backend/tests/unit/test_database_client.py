@@ -160,6 +160,97 @@ class TestDatabaseClientGetAllRecipes:
         assert "Not connected to database" in str(exc_info.value)
 
 
+class TestDatabaseClientGetRecipeById:
+    """Test DatabaseClient get_recipe_by_id method"""
+    
+    def test_get_recipe_by_id_success(self):
+        """Test successful retrieval of a recipe by ID"""
+        # Setup client with mock connection
+        client = DatabaseClient()
+        mock_connection = Mock()
+        mock_cursor = Mock()
+        
+        # Mock database response
+        mock_cursor.fetchone.return_value = (
+            1, 'Test Recipe', 'dinner', 
+            [{'quantity': 250, 'unit': 'g', 'name': 'pasta'}],
+            ['salt', 'pepper'], 
+            'Cook it', 30, 4
+        )
+        
+        mock_connection.cursor.return_value = mock_cursor
+        client._connection = mock_connection
+        
+        # Mock is_connected to return True
+        with patch.object(client, 'is_connected', return_value=True):
+            recipe = client.get_recipe_by_id(1)
+        
+        # Assertions
+        assert recipe is not None
+        assert recipe['id'] == 1
+        assert recipe['name'] == 'Test Recipe'
+        assert recipe['category'] == 'dinner'
+        assert recipe['main_ingredients'] == [{'quantity': 250, 'unit': 'g', 'name': 'pasta'}]
+        assert recipe['common_ingredients'] == ['salt', 'pepper']
+        assert recipe['instructions'] == 'Cook it'
+        assert recipe['prep_time'] == 30
+        assert recipe['portions'] == 4
+        
+        # Verify SQL query
+        mock_cursor.execute.assert_called_once_with(
+            """
+            SELECT id, name, category, main_ingredients, common_ingredients, instructions, prep_time, portions
+            FROM recipes
+            WHERE id = %s
+        """, (1,)
+        )
+        
+        mock_cursor.close.assert_called_once()
+    
+    def test_get_recipe_by_id_not_found(self):
+        """Test get_recipe_by_id when recipe doesn't exist"""
+        # Setup client with mock connection
+        client = DatabaseClient()
+        mock_connection = Mock()
+        mock_cursor = Mock()
+        
+        # Mock database response - no recipe found
+        mock_cursor.fetchone.return_value = None
+        
+        mock_connection.cursor.return_value = mock_cursor
+        client._connection = mock_connection
+        
+        # Mock is_connected to return True
+        with patch.object(client, 'is_connected', return_value=True):
+            recipe = client.get_recipe_by_id(999)
+        
+        # Assertions
+        assert recipe is None
+        
+        # Verify SQL query
+        mock_cursor.execute.assert_called_once_with(
+            """
+            SELECT id, name, category, main_ingredients, common_ingredients, instructions, prep_time, portions
+            FROM recipes
+            WHERE id = %s
+        """, (999,)
+        )
+        
+        mock_cursor.close.assert_called_once()
+    
+    def test_get_recipe_by_id_not_connected(self):
+        """Test get_recipe_by_id when not connected to database"""
+        client = DatabaseClient()
+        client._connection = None
+        
+        # Mock is_connected to return False
+        with patch.object(client, 'is_connected', return_value=False):
+            with pytest.raises(Exception) as exc_info:
+                client.get_recipe_by_id(1)
+        
+        assert "Not connected to database" in str(exc_info.value)
+
+
 class TestDatabaseClientAddRecipe:
     """Test DatabaseClient add_recipe method"""
     

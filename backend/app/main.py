@@ -68,6 +68,34 @@ def get_all_recipes():
         # Always disconnect
         db_client.disconnect()
 
+@app.get("/recipes/{recipe_id}", response_model=RecipeResponse)
+def get_recipe_by_id(recipe_id: int):
+    """Get a specific recipe by ID"""
+    # Create database client
+    db_client = DatabaseClient()
+    
+    try:
+        # Connect to database
+        if not db_client.connect():
+            raise HTTPException(status_code=500, detail="Failed to connect to database")
+        
+        # Get the recipe by ID
+        recipe = db_client.get_recipe_by_id(recipe_id)
+        
+        if not recipe:
+            raise HTTPException(status_code=404, detail=f"Recipe with ID {recipe_id} not found")
+        
+        return recipe
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving recipe: {str(e)}")
+    
+    finally:
+        # Always disconnect
+        db_client.disconnect()
+
 @app.post("/recipes", response_model=RecipeResponse)
 def create_recipe(recipe: RecipeCreate):
     """Create a new recipe in the database"""

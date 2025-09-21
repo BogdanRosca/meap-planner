@@ -316,3 +316,121 @@ class TestDeleteRecipeEndpoint:
         assert response.status_code == 422  # Unprocessable Entity
         json_response = response.json()
         assert "detail" in json_response
+
+
+class TestGetRecipeByIdEndpoint:
+    """Test the GET /recipes/{recipe_id} endpoint"""
+    
+    @patch('app.main.DatabaseClient')
+    def test_get_recipe_by_id_success(self, mock_db_client_class):
+        """Test successful retrieval of a recipe by ID"""
+        # Setup mock
+        mock_db_client = Mock()
+        mock_db_client_class.return_value = mock_db_client
+        mock_db_client.connect.return_value = True
+        mock_db_client.get_recipe_by_id.return_value = {
+            'id': 1,
+            'name': 'Test Recipe',
+            'category': 'dinner',
+            'main_ingredients': [{'quantity': 250, 'unit': 'g', 'name': 'pasta'}],
+            'common_ingredients': ['salt', 'pepper'],
+            'instructions': 'Cook it',
+            'prep_time': 30,
+            'portions': 4
+        }
+        
+        # Make request
+        response = client.get("/recipes/1")
+        
+        # Assertions
+        assert response.status_code == 200
+        json_response = response.json()
+        assert json_response["id"] == 1
+        assert json_response["name"] == "Test Recipe"
+        assert json_response["category"] == "dinner"
+        assert json_response["main_ingredients"] == [{'quantity': 250, 'unit': 'g', 'name': 'pasta'}]
+        assert json_response["common_ingredients"] == ['salt', 'pepper']
+        assert json_response["instructions"] == "Cook it"
+        assert json_response["prep_time"] == 30
+        assert json_response["portions"] == 4
+        
+        # Verify mock calls
+        mock_db_client.connect.assert_called_once()
+        mock_db_client.get_recipe_by_id.assert_called_once_with(1)
+        mock_db_client.disconnect.assert_called_once()
+    
+    @patch('app.main.DatabaseClient')
+    def test_get_recipe_by_id_not_found(self, mock_db_client_class):
+        """Test retrieval of non-existent recipe"""
+        # Setup mock
+        mock_db_client = Mock()
+        mock_db_client_class.return_value = mock_db_client
+        mock_db_client.connect.return_value = True
+        mock_db_client.get_recipe_by_id.return_value = None
+        
+        # Make request
+        response = client.get("/recipes/999")
+        
+        # Assertions
+        assert response.status_code == 404
+        json_response = response.json()
+        assert json_response["detail"] == "Recipe with ID 999 not found"
+        
+        # Verify mock calls
+        mock_db_client.connect.assert_called_once()
+        mock_db_client.get_recipe_by_id.assert_called_once_with(999)
+        mock_db_client.disconnect.assert_called_once()
+    
+    @patch('app.main.DatabaseClient')
+    def test_get_recipe_by_id_database_connection_error(self, mock_db_client_class):
+        """Test recipe retrieval when database connection fails"""
+        # Setup mock
+        mock_db_client = Mock()
+        mock_db_client_class.return_value = mock_db_client
+        mock_db_client.connect.return_value = False
+        
+        # Make request
+        response = client.get("/recipes/1")
+        
+        # Assertions
+        assert response.status_code == 500
+        json_response = response.json()
+        assert json_response["detail"] == "Failed to connect to database"
+        
+        # Verify mock calls
+        mock_db_client.connect.assert_called_once()
+        mock_db_client.get_recipe_by_id.assert_not_called()
+        mock_db_client.disconnect.assert_called_once()
+    
+    @patch('app.main.DatabaseClient')
+    def test_get_recipe_by_id_database_error(self, mock_db_client_class):
+        """Test recipe retrieval when database operation fails"""
+        # Setup mock
+        mock_db_client = Mock()
+        mock_db_client_class.return_value = mock_db_client
+        mock_db_client.connect.return_value = True
+        mock_db_client.get_recipe_by_id.side_effect = Exception("Database error")
+        
+        # Make request
+        response = client.get("/recipes/1")
+        
+        # Assertions
+        assert response.status_code == 500
+        json_response = response.json()
+        assert "Error retrieving recipe" in json_response["detail"]
+        assert "Database error" in json_response["detail"]
+        
+        # Verify mock calls
+        mock_db_client.connect.assert_called_once()
+        mock_db_client.get_recipe_by_id.assert_called_once_with(1)
+        mock_db_client.disconnect.assert_called_once()
+    
+    def test_get_recipe_by_id_invalid_id(self):
+        """Test retrieval with invalid recipe ID"""
+        # Make request with invalid ID (non-integer)
+        response = client.get("/recipes/not-a-number")
+        
+        # Should return validation error
+        assert response.status_code == 422  # Unprocessable Entity
+        json_response = response.json()
+        assert "detail" in json_response
