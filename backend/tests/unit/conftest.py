@@ -102,6 +102,109 @@ INVALID_UPDATE_DATA_TYPES = {
     'portions': 'also-not-a-number'  # Should be int
 }
 
+# Database row tuples (as returned by cursor.fetchone/fetchall)
+SAMPLE_RECIPE_1_DB_ROW = (
+    1, 'Test Recipe', 'dinner',
+    [{'quantity': 250, 'unit': 'g', 'name': 'pasta'}],
+    ['salt', 'pepper'],
+    'Cook it', 30, 4
+)
+
+SAMPLE_RECIPE_2_DB_ROW = (
+    123, 'New Recipe', 'lunch',
+    [{'quantity': 200, 'unit': 'g', 'name': 'rice'}],
+    ['salt'],
+    'Cook rice', 20, 2
+)
+
+# Database test data for add_recipe method
+ADD_RECIPE_PARAMS = {
+    'name': 'New Recipe',
+    'category': 'lunch',
+    'main_ingredients': [{'quantity': 200, 'unit': 'g', 'name': 'rice'}],
+    'common_ingredients': ['salt'],
+    'instructions': 'Cook rice',
+    'prep_time': 20,
+    'portions': 2
+}
+
+# Update recipe test data
+UPDATE_RECIPE_PARAMS = {'name': 'Updated Recipe'}
+UPDATE_RECIPE_WITH_INGREDIENTS_PARAMS = {
+    'main_ingredients': [{'quantity': 200, 'unit': 'g', 'name': 'rice'}],
+    'common_ingredients': ['garlic', 'onion']
+}
+
+# Updated recipe database row
+UPDATED_RECIPE_DB_ROW = (
+    1, 'Test Recipe', 'dinner',
+    [{'quantity': 200, 'unit': 'g', 'name': 'rice'}],
+    ['garlic', 'onion'],
+    'Cook rice', 25, 2
+)
+
+# Edge case test data
+EDGE_CASE_RECIPE_DATA = {
+    "name": "A" * 255,  # Very long name
+    "category": "breakfast",
+    "main_ingredients": [
+        {"quantity": 0.001, "unit": "mg", "name": "x"},  # Very small quantity
+        {"quantity": 9999.999, "unit": "kg", "name": "y"}  # Very large quantity
+    ],
+    "common_ingredients": [],  # Empty list
+    "instructions": "X",  # Minimal instructions
+    "prep_time": 0,  # Zero prep time
+    "portions": 1  # Minimum portions
+}
+
+UNICODE_RECIPE_DATA = {
+    "name": "Crème Brûlée with émmental 🧀",
+    "category": "dinner",
+    "main_ingredients": [
+        {"quantity": 250, "unit": "g", "name": "émmental cheese"},
+        {"quantity": 2, "unit": "cups", "name": "crème fraîche"}
+    ],
+    "common_ingredients": ["salt", "poivre noir", "herbes de Provence"],
+    "instructions": "Mélanger délicatement les ingrédients...",
+    "prep_time": 45,
+    "portions": 6
+}
+
+# Recipe with many ingredients
+def generate_many_ingredients_recipe_data():
+    """Generate recipe data with many ingredients for testing"""
+    main_ingredients = [
+        {"quantity": i, "unit": "g", "name": f"ingredient_{i}"}
+        for i in range(1, 21)  # 20 ingredients
+    ]
+    
+    common_ingredients = [f"common_{i}" for i in range(1, 11)]  # 10 common ingredients
+    
+    return {
+        "name": "Complex Recipe",
+        "category": "dinner",
+        "main_ingredients": main_ingredients,
+        "common_ingredients": common_ingredients,
+        "instructions": "Mix everything together",
+        "prep_time": 120,
+        "portions": 8
+    }
+
+EMPTY_RECIPE_DATA = {
+    'name': 'Empty Recipe',
+    'category': 'snack',
+    'main_ingredients': [],  # Empty list
+    'common_ingredients': [],  # Empty list
+    'instructions': 'No cooking',
+    'prep_time': 0,
+    'portions': 1
+}
+
+# Database row for empty recipe
+EMPTY_RECIPE_DB_ROW = (
+    1, 'Empty Recipe', 'snack', [], [], 'No cooking', 0, 1
+)
+
 
 @pytest.fixture
 def mock_db_client():

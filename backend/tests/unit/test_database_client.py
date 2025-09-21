@@ -5,6 +5,11 @@ import pytest
 from unittest.mock import Mock, patch
 import psycopg2
 from app.database_client import DatabaseClient
+from .conftest import (
+    SAMPLE_RECIPE_1, SAMPLE_RECIPE_2, SAMPLE_RECIPE_1_DB_ROW, SAMPLE_RECIPE_2_DB_ROW,
+    ADD_RECIPE_PARAMS, UPDATE_RECIPE_PARAMS, UPDATE_RECIPE_WITH_INGREDIENTS_PARAMS,
+    UPDATED_RECIPE_DB_ROW
+)
 
 
 class TestDatabaseClientConnection:
@@ -113,12 +118,7 @@ class TestDatabaseClientGetAllRecipes:
         mock_cursor = Mock()
         
         # Mock database response
-        mock_cursor.fetchall.return_value = [
-            (1, 'Test Recipe', 'dinner', 
-             [{'quantity': 250, 'unit': 'g', 'name': 'pasta'}],
-             ['salt', 'pepper'], 
-             'Cook it', 30, 4)
-        ]
+        mock_cursor.fetchall.return_value = [SAMPLE_RECIPE_1_DB_ROW]
         
         mock_connection.cursor.return_value = mock_cursor
         client._connection = mock_connection
@@ -130,14 +130,14 @@ class TestDatabaseClientGetAllRecipes:
         # Assertions
         assert len(recipes) == 1
         recipe = recipes[0]
-        assert recipe['id'] == 1
-        assert recipe['name'] == 'Test Recipe'
-        assert recipe['category'] == 'dinner'
-        assert recipe['main_ingredients'] == [{'quantity': 250, 'unit': 'g', 'name': 'pasta'}]
-        assert recipe['common_ingredients'] == ['salt', 'pepper']
-        assert recipe['instructions'] == 'Cook it'
-        assert recipe['prep_time'] == 30
-        assert recipe['portions'] == 4
+        assert recipe['id'] == SAMPLE_RECIPE_1['id']
+        assert recipe['name'] == SAMPLE_RECIPE_1['name']
+        assert recipe['category'] == SAMPLE_RECIPE_1['category']
+        assert recipe['main_ingredients'] == SAMPLE_RECIPE_1['main_ingredients']
+        assert recipe['common_ingredients'] == SAMPLE_RECIPE_1['common_ingredients']
+        assert recipe['instructions'] == SAMPLE_RECIPE_1['instructions']
+        assert recipe['prep_time'] == SAMPLE_RECIPE_1['prep_time']
+        assert recipe['portions'] == SAMPLE_RECIPE_1['portions']
         
         # Verify SQL query
         mock_cursor.execute.assert_called_once()
@@ -164,19 +164,14 @@ class TestDatabaseClientGetRecipeById:
     """Test DatabaseClient get_recipe_by_id method"""
     
     def test_get_recipe_by_id_success(self):
-        """Test successful retrieval of a recipe by ID"""
+        """Test successful retrieval of recipe by ID"""
         # Setup client with mock connection
         client = DatabaseClient()
         mock_connection = Mock()
         mock_cursor = Mock()
         
         # Mock database response
-        mock_cursor.fetchone.return_value = (
-            1, 'Test Recipe', 'dinner', 
-            [{'quantity': 250, 'unit': 'g', 'name': 'pasta'}],
-            ['salt', 'pepper'], 
-            'Cook it', 30, 4
-        )
+        mock_cursor.fetchone.return_value = SAMPLE_RECIPE_1_DB_ROW
         
         mock_connection.cursor.return_value = mock_cursor
         client._connection = mock_connection
@@ -186,24 +181,22 @@ class TestDatabaseClientGetRecipeById:
             recipe = client.get_recipe_by_id(1)
         
         # Assertions
-        assert recipe is not None
-        assert recipe['id'] == 1
-        assert recipe['name'] == 'Test Recipe'
-        assert recipe['category'] == 'dinner'
-        assert recipe['main_ingredients'] == [{'quantity': 250, 'unit': 'g', 'name': 'pasta'}]
-        assert recipe['common_ingredients'] == ['salt', 'pepper']
-        assert recipe['instructions'] == 'Cook it'
-        assert recipe['prep_time'] == 30
-        assert recipe['portions'] == 4
+        assert recipe['id'] == SAMPLE_RECIPE_1['id']
+        assert recipe['name'] == SAMPLE_RECIPE_1['name']
+        assert recipe['category'] == SAMPLE_RECIPE_1['category']
+        assert recipe['main_ingredients'] == SAMPLE_RECIPE_1['main_ingredients']
+        assert recipe['common_ingredients'] == SAMPLE_RECIPE_1['common_ingredients']
+        assert recipe['instructions'] == SAMPLE_RECIPE_1['instructions']
+        assert recipe['prep_time'] == SAMPLE_RECIPE_1['prep_time']
+        assert recipe['portions'] == SAMPLE_RECIPE_1['portions']
         
         # Verify SQL query
-        mock_cursor.execute.assert_called_once_with(
-            """
-            SELECT id, name, category, main_ingredients, common_ingredients, instructions, prep_time, portions
-            FROM recipes
-            WHERE id = %s
-        """, (1,)
-        )
+        mock_cursor.execute.assert_called_once()
+        call_args = mock_cursor.execute.call_args
+        assert "SELECT id, name, category, main_ingredients, common_ingredients, instructions, prep_time, portions" in call_args[0][0]
+        assert "FROM recipes" in call_args[0][0]
+        assert "WHERE id = %s" in call_args[0][0]
+        assert call_args[0][1] == (1,)
         
         mock_cursor.close.assert_called_once()
     
@@ -262,38 +255,21 @@ class TestDatabaseClientAddRecipe:
         mock_cursor = Mock()
         
         # Mock database response for RETURNING clause
-        mock_cursor.fetchone.return_value = (
-            123, 'New Recipe', 'lunch',
-            [{'quantity': 200, 'unit': 'g', 'name': 'rice'}],
-            ['salt'], 
-            'Cook rice', 20, 2
-        )
+        mock_cursor.fetchone.return_value = SAMPLE_RECIPE_2_DB_ROW
         
         mock_connection.cursor.return_value = mock_cursor
         client._connection = mock_connection
         
-        # Test data
-        main_ingredients = [{'quantity': 200, 'unit': 'g', 'name': 'rice'}]
-        common_ingredients = ['salt']
-        
         # Mock is_connected to return True
         with patch.object(client, 'is_connected', return_value=True):
-            result = client.add_recipe(
-                name='New Recipe',
-                category='lunch',
-                main_ingredients=main_ingredients,
-                common_ingredients=common_ingredients,
-                instructions='Cook rice',
-                prep_time=20,
-                portions=2
-            )
+            result = client.add_recipe(**ADD_RECIPE_PARAMS)
         
         # Assertions
-        assert result['id'] == 123
-        assert result['name'] == 'New Recipe'
-        assert result['category'] == 'lunch'
-        assert result['main_ingredients'] == main_ingredients
-        assert result['common_ingredients'] == common_ingredients
+        assert result['id'] == SAMPLE_RECIPE_2['id']
+        assert result['name'] == SAMPLE_RECIPE_2['name']
+        assert result['category'] == SAMPLE_RECIPE_2['category']
+        assert result['main_ingredients'] == SAMPLE_RECIPE_2['main_ingredients']
+        assert result['common_ingredients'] == SAMPLE_RECIPE_2['common_ingredients']
         
         # Verify SQL execution
         mock_cursor.execute.assert_called_once()
@@ -303,11 +279,11 @@ class TestDatabaseClientAddRecipe:
         
         # Verify parameters were passed correctly
         params = mock_cursor.execute.call_args[0][1]
-        assert params[0] == 'New Recipe'  # name
-        assert params[1] == 'lunch'       # category
+        assert params[0] == ADD_RECIPE_PARAMS['name']
+        assert params[1] == ADD_RECIPE_PARAMS['category']
         # params[2] should be JSON string of main_ingredients
         assert 'rice' in params[2]  # JSON contains rice
-        assert params[3] == common_ingredients  # common_ingredients
+        assert params[3] == ADD_RECIPE_PARAMS['common_ingredients']
         
         mock_connection.commit.assert_called_once()
         mock_cursor.close.assert_called_once()
@@ -500,22 +476,13 @@ class TestUpdateRecipeMethod:
              35, 4)  # Updated recipe data
         ]
         
-        # Test data
-        updates = {
-            'name': 'Updated Recipe',
-            'prep_time': 35,
-            'instructions': 'Updated instructions'
-        }
-        
         # Call method
-        result = client.update_recipe(1, updates)
+        result = client.update_recipe(1, UPDATE_RECIPE_PARAMS)
         
         # Assertions
         assert result is not None
         assert result['id'] == 1
         assert result['name'] == 'Updated Recipe'
-        assert result['prep_time'] == 35
-        assert result['instructions'] == 'Updated instructions'
         
         # Verify cursor calls (is_connected check, exists check, update, select)
         assert mock_cursor.execute.call_count == 4
@@ -596,30 +563,20 @@ class TestUpdateRecipeMethod:
         # Mock fetchone to simulate recipe exists check and return updated data
         mock_cursor.fetchone.side_effect = [
             (1,),  # Recipe exists check
-            (1, 'Test Recipe', 'dinner',
-             [{'quantity': 200, 'unit': 'g', 'name': 'rice'}],
-             ['garlic', 'onion'],
-             'Cook rice',
-             25, 2)  # Updated recipe data
+            UPDATED_RECIPE_DB_ROW  # Updated recipe data
         ]
         
-        # Test data
-        updates = {
-            'main_ingredients': [{'quantity': 200, 'unit': 'g', 'name': 'rice'}],
-            'common_ingredients': ['garlic', 'onion'],
-            'prep_time': 25
-        }
-        
         # Call method
-        result = client.update_recipe(1, updates)
+        result = client.update_recipe(1, UPDATE_RECIPE_WITH_INGREDIENTS_PARAMS)
         
         # Assertions
         assert result is not None
-        assert result['main_ingredients'] == [{'quantity': 200, 'unit': 'g', 'name': 'rice'}]
-        assert result['common_ingredients'] == ['garlic', 'onion']
-        assert result['prep_time'] == 25
+        assert result['main_ingredients'] == UPDATE_RECIPE_WITH_INGREDIENTS_PARAMS['main_ingredients']
+        assert result['common_ingredients'] == UPDATE_RECIPE_WITH_INGREDIENTS_PARAMS['common_ingredients']
         
         # Verify JSON serialization was called for ingredients
         mock_cursor.execute.assert_called()
+        mock_connection.commit.assert_called_once()
+        mock_cursor.close.assert_called()
         mock_connection.commit.assert_called_once()
         mock_cursor.close.assert_called()

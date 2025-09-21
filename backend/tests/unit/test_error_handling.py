@@ -5,6 +5,10 @@ from unittest.mock import Mock, patch
 from fastapi.testclient import TestClient
 from app.main import app
 from app.database_client import DatabaseClient
+from .conftest import (
+    CREATE_RECIPE_DATA, EDGE_CASE_RECIPE_DATA, UNICODE_RECIPE_DATA,
+    EMPTY_RECIPE_DATA, EMPTY_RECIPE_DB_ROW, generate_many_ingredients_recipe_data
+)
 
 
 # Create a test client
@@ -44,19 +48,8 @@ class TestErrorHandling:
         mock_db_client.connect.return_value = True
         mock_db_client.add_recipe.side_effect = RuntimeError("Database exploded")
         
-        # Prepare valid request data
-        recipe_data = {
-            "name": "Test Recipe",
-            "category": "dinner",
-            "main_ingredients": [{"quantity": 250, "unit": "g", "name": "pasta"}],
-            "common_ingredients": ["salt"],
-            "instructions": "Cook it",
-            "prep_time": 30,
-            "portions": 4
-        }
-        
         # Make request
-        response = client.post("/recipes", json=recipe_data)
+        response = client.post("/recipes", json=CREATE_RECIPE_DATA)
         
         # Should handle gracefully
         assert response.status_code == 500
