@@ -1,0 +1,42 @@
+[flake8]
+# Maximum line length
+max-line-length = 127
+
+# Maximum cyclomatic complexity
+max-complexity = 10
+
+# Error codes to check (balanced approach for CI/CD)
+# E: Critical pycodestyle errors (syntax, indentation, imports)
+# F: pyflakes errors (undefined names, unused imports, etc.)
+# W: Selected warnings (not all to avoid being too strict)
+select = E,F,W292,W391
+
+# Directories to check
+include = app,tests
+
+# Files/directories to ignore
+exclude = 
+    __pycache__,
+    .git,
+    .pytest_cache,
+    venv,
+    .venv,
+    migrations
+
+# Show source code for each error
+show-source = True
+
+# Count the number of occurrences of each error/warning code
+count = True
+
+# Print total number of errors and warnings to stderr
+statistics = True
+
+# Ignore some warnings that are too strict for CI
+ignore = 
+    # Blank line contains whitespace (too many existing cases)
+    W293,
+    # Line too long (handled by max-line-length) 
+    E501,
+    # Trailing whitespace (too strict for CI)
+    W291

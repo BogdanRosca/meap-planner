@@ -1,9 +1,9 @@
-import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 
 # Create a test client
 client = TestClient(app)
+
 
 def test_health_endpoint():
     """Test the health check endpoint"""
@@ -17,6 +17,7 @@ def test_health_endpoint():
         "status": "healthy",
         "message": "Meal Planner API is running !"
     }
+
 
 def test_health_endpoint_response_format():
     """Test that the health endpoint returns valid JSON"""
