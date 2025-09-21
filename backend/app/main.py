@@ -109,7 +109,7 @@ def create_recipe(recipe: RecipeCreate):
         
         # Create the recipe
         # Convert Pydantic Ingredient objects to dictionaries
-        main_ingredients_dicts = [ingredient.dict() for ingredient in recipe.main_ingredients]
+        main_ingredients_dicts = [ingredient.model_dump() for ingredient in recipe.main_ingredients]
         
         new_recipe = db_client.add_recipe(
             name=recipe.name,
