@@ -190,14 +190,29 @@ def generate_many_ingredients_recipe_data():
         "portions": 8
     }
 
+# Complex recipe with many ingredients
+COMPLEX_RECIPE_DATA = {
+    "name": "Complex Recipe",
+    "category": "dinner",
+    "main_ingredients": [
+        {"quantity": i, "unit": "g", "name": f"ingredient_{i}"}
+        for i in range(1, 21)  # 20 ingredients
+    ],
+    "common_ingredients": [f"common_{i}" for i in range(1, 11)],  # 10 common ingredients
+    "instructions": "Mix everything together",
+    "prep_time": 120,
+    "portions": 8
+}
+
+# Empty recipe data for edge case testing
 EMPTY_RECIPE_DATA = {
-    'name': 'Empty Recipe',
-    'category': 'snack',
-    'main_ingredients': [],  # Empty list
-    'common_ingredients': [],  # Empty list
-    'instructions': 'No cooking',
-    'prep_time': 0,
-    'portions': 1
+    "name": "Empty Recipe",
+    "category": "snack",
+    "main_ingredients": [],
+    "common_ingredients": [],
+    "instructions": "No cooking",
+    "prep_time": 0,
+    "portions": 1
 }
 
 # Database row for empty recipe

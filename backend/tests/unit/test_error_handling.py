@@ -5,10 +5,8 @@ from unittest.mock import Mock, patch
 from fastapi.testclient import TestClient
 from app.main import app
 from app.database_client import DatabaseClient
-from .conftest import (
-    CREATE_RECIPE_DATA, EDGE_CASE_RECIPE_DATA, UNICODE_RECIPE_DATA,
-    EMPTY_RECIPE_DATA, EMPTY_RECIPE_DB_ROW, generate_many_ingredients_recipe_data
-)
+from .conftest import (CREATE_RECIPE_DATA, UPDATE_RECIPE_DATA, EDGE_CASE_RECIPE_DATA, 
+                     UNICODE_RECIPE_DATA, EMPTY_RECIPE_DATA, COMPLEX_RECIPE_DATA)
 
 
 # Create a test client
@@ -85,84 +83,39 @@ class TestEdgeCases:
     
     def test_create_recipe_with_edge_case_values(self):
         """Test recipe creation with edge case values"""
-        # Test with extreme but valid values
-        recipe_data = {
-            "name": "A" * 255,  # Very long name
-            "category": "breakfast",
-            "main_ingredients": [
-                {"quantity": 0.001, "unit": "mg", "name": "x"},  # Very small quantity
-                {"quantity": 9999.999, "unit": "kg", "name": "y"}  # Very large quantity
-            ],
-            "common_ingredients": [],  # Empty list
-            "instructions": "X",  # Minimal instructions
-            "prep_time": 0,  # Zero prep time
-            "portions": 1  # Minimum portions
-        }
-        
         with patch('app.routes.recipes.DatabaseClient') as mock_db_client_class:
             mock_db_client = Mock()
             mock_db_client_class.return_value = mock_db_client
             mock_db_client.connect.return_value = True
-            mock_db_client.add_recipe.return_value = {"id": 1, **recipe_data}
+            mock_db_client.add_recipe.return_value = {"id": 1, **EDGE_CASE_RECIPE_DATA}
             
-            response = client.post("/recipes", json=recipe_data)
+            response = client.post("/recipes", json=EDGE_CASE_RECIPE_DATA)
             
             # Should handle edge cases successfully
             assert response.status_code == 201
     
     def test_create_recipe_with_unicode_characters(self):
         """Test recipe creation with unicode characters"""
-        recipe_data = {
-            "name": "Crème Brûlée with émmental 🧀",
-            "category": "dinner",
-            "main_ingredients": [
-                {"quantity": 250, "unit": "g", "name": "émmental cheese"},
-                {"quantity": 2, "unit": "cups", "name": "crème fraîche"}
-            ],
-            "common_ingredients": ["salt", "poivre noir", "herbes de Provence"],
-            "instructions": "Mélanger délicatement les ingrédients...",
-            "prep_time": 45,
-            "portions": 6
-        }
-        
         with patch('app.routes.recipes.DatabaseClient') as mock_db_client_class:
             mock_db_client = Mock()
             mock_db_client_class.return_value = mock_db_client
             mock_db_client.connect.return_value = True
-            mock_db_client.add_recipe.return_value = {"id": 1, **recipe_data}
+            mock_db_client.add_recipe.return_value = {"id": 1, **UNICODE_RECIPE_DATA}
             
-            response = client.post("/recipes", json=recipe_data)
+            response = client.post("/recipes", json=UNICODE_RECIPE_DATA)
             
             # Should handle unicode successfully
             assert response.status_code == 201
     
     def test_create_recipe_with_many_ingredients(self):
         """Test recipe creation with many ingredients"""
-        # Create a recipe with many ingredients
-        main_ingredients = [
-            {"quantity": i, "unit": "g", "name": f"ingredient_{i}"}
-            for i in range(1, 21)  # 20 ingredients
-        ]
-        
-        common_ingredients = [f"common_{i}" for i in range(1, 11)]  # 10 common ingredients
-        
-        recipe_data = {
-            "name": "Complex Recipe",
-            "category": "dinner",
-            "main_ingredients": main_ingredients,
-            "common_ingredients": common_ingredients,
-            "instructions": "Mix everything together",
-            "prep_time": 120,
-            "portions": 8
-        }
-        
         with patch('app.routes.recipes.DatabaseClient') as mock_db_client_class:
             mock_db_client = Mock()
             mock_db_client_class.return_value = mock_db_client
             mock_db_client.connect.return_value = True
-            mock_db_client.add_recipe.return_value = {"id": 1, **recipe_data}
+            mock_db_client.add_recipe.return_value = {"id": 1, **COMPLEX_RECIPE_DATA}
             
-            response = client.post("/recipes", json=recipe_data)
+            response = client.post("/recipes", json=COMPLEX_RECIPE_DATA)
             
             # Should handle many ingredients successfully
             assert response.status_code == 201
@@ -198,26 +151,21 @@ class TestDatabaseClientEdgeCases:
         mock_connection = Mock()
         mock_cursor = Mock()
         
-        # Mock successful response
+        # Mock successful response using constants
         mock_cursor.fetchone.return_value = (
-            1, 'Empty Recipe', 'snack', [], [], 'No cooking', 0, 1
+            1, EMPTY_RECIPE_DATA["name"], EMPTY_RECIPE_DATA["category"], 
+            EMPTY_RECIPE_DATA["main_ingredients"], EMPTY_RECIPE_DATA["common_ingredients"], 
+            EMPTY_RECIPE_DATA["instructions"], EMPTY_RECIPE_DATA["prep_time"], 
+            EMPTY_RECIPE_DATA["portions"]
         )
         
         mock_connection.cursor.return_value = mock_cursor
         client._connection = mock_connection
         
         with patch.object(client, 'is_connected', return_value=True):
-            result = client.add_recipe(
-                name='Empty Recipe',
-                category='snack',
-                main_ingredients=[],  # Empty list
-                common_ingredients=[],  # Empty list
-                instructions='No cooking',
-                prep_time=0,
-                portions=1
-            )
+            result = client.add_recipe(**EMPTY_RECIPE_DATA)
         
         # Should handle empty ingredients successfully
-        assert result['name'] == 'Empty Recipe'
+        assert result['name'] == EMPTY_RECIPE_DATA["name"]
         assert result['main_ingredients'] == []
         assert result['common_ingredients'] == []
