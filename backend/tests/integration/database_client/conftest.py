@@ -2,7 +2,12 @@
 Shared test configuration and fixtures for database client tests
 """
 import pytest
+import os
+from dotenv import load_dotenv
 from app.database_client import DatabaseClient
+
+# Load test environment variables
+load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '..', '.env.test'))
 
 
 @pytest.fixture

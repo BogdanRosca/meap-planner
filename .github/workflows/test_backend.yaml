@@ -62,10 +62,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: lint
     env:
-      PGHOST: localhost
-      PGPORT: 5432
-      PGDATABASE: supermarket
-      POSTGRES_USER: chubby.user
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
     defaults:
       run:
