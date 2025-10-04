@@ -31,6 +31,7 @@ interface NewRecipe {
 }
 
 function App() {
+  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +52,7 @@ function App() {
     setError(null);
     
     try {
-      const response = await fetch('http://localhost:8000/recipes');
+      const response = await fetch(`${backendUrl}/recipes`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -72,7 +73,7 @@ function App() {
     setError(null);
     
     try {
-      const response = await fetch('http://localhost:8000/recipes', {
+      const response = await fetch(`${backendUrl}/recipes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
