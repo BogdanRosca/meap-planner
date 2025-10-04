@@ -2,7 +2,12 @@
 Shared test configuration and fixtures for unit tests
 """
 import pytest
+import os
+from dotenv import load_dotenv
 from unittest.mock import Mock
+
+# Load test environment variables
+load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '.env.test'))
 
 
 # Common test data for recipes

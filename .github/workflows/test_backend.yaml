@@ -1,6 +1,7 @@
 name: Test BE service
 
 on:
+  workflow_dispatch:
   pull_request:
     branches: [ main ]
 
@@ -69,9 +70,9 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_DB: postgres
+          POSTGRES_DB: supermarket
+          POSTGRES_USER: chubby.user
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         ports:
           - 5432:5432
         options: >-
@@ -98,7 +99,6 @@ jobs:
       uses: ./.github/actions/setup-database
       with:
         working-directory: './backend'
-        postgres-password: ${{ secrets.POSTGRES_PASSWORD }}
 
     - name: ▶️ Test server startup
       uses: ./.github/actions/test-server-start

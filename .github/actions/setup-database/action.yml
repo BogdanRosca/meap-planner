@@ -5,9 +5,6 @@ inputs:
     description: 'Working directory containing .env.test file'
     required: true
     default: './backend'
-  postgres-password:
-    description: 'PostgreSQL password for the database user'
-    required: true
 
 runs:
   using: 'composite'
@@ -21,14 +18,14 @@ runs:
     - name: Set up database
       shell: bash
       working-directory: ${{ inputs.working-directory }}
-      run: |
+      run: |      
         # Copy test environment file
         cp .env.test .env
         
         # Read database configuration from .env.test
         export $(grep -v '^#' .env.test | xargs)
-      
-        echo "Database config: PGDATABASE=$PGDATABASE, POSTGRES_USER=$POSTGRES_USER"
+
+        echo "Database config: POSTGRES_DB=$POSTGRES_DB, POSTGRES_USER=$POSTGRES_USER"
         
         # Wait for PostgreSQL to be ready
         until pg_isready -h localhost -p 5432 -U postgres; do
@@ -36,39 +33,10 @@ runs:
           sleep 2
         done
         
-        # Set the password from input
-        POSTGRES_PASSWORD="${{ inputs.postgres-password }}"
-        
-        # Check if POSTGRES_PASSWORD is available
-        if [ -z "$POSTGRES_PASSWORD" ]; then
-          echo "Error: POSTGRES_PASSWORD is not provided"
-          exit 1
-        fi
-        
-        # Create user and database with better error handling
-        # Save target database name and temporarily unset PGDATABASE for admin operations
-        TARGET_DATABASE="$PGDATABASE"
-        unset PGDATABASE
-        
-        echo "Creating user $POSTGRES_USER..."
-        PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "CREATE USER \"$POSTGRES_USER\" WITH PASSWORD '$POSTGRES_PASSWORD';" || {
-          echo "Failed to create user, checking if user already exists..."
-          PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "SELECT 1 FROM pg_user WHERE usename = '$POSTGRES_USER';" | grep -q 1 && echo "User already exists" || exit 1
-        }
-        
-        echo "Creating database $TARGET_DATABASE..."
-        PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "CREATE DATABASE $TARGET_DATABASE OWNER \"$POSTGRES_USER\";" || {
-          echo "Failed to create database, checking if database already exists..."
-          PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "SELECT 1 FROM pg_database WHERE datname = '$TARGET_DATABASE';" | grep -q 1 && echo "Database already exists" || exit 1
-        }
-        
-        # Restore PGDATABASE for subsequent operations
-        export PGDATABASE="$TARGET_DATABASE"
-        
         # Verify database connection
         echo "Verifying database connection..."
-        PGPASSWORD="$POSTGRES_PASSWORD" psql -h localhost -U "$POSTGRES_USER" -d "$PGDATABASE" -c "SELECT version();" || {
-          echo "Failed to connect to database $PGDATABASE as user $POSTGRES_USER"
+        PGPASSWORD="$POSTGRES_PASSWORD" psql -h localhost -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT version();" || {
+          echo "Failed to connect to database $POSTGRES_DB as user $POSTGRES_USER"
           exit 1
         }
         
