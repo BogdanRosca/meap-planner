@@ -46,17 +46,24 @@ runs:
         fi
         
         # Create user and database with better error handling
+        # Save target database name and temporarily unset PGDATABASE for admin operations
+        TARGET_DATABASE="$PGDATABASE"
+        unset PGDATABASE
+        
         echo "Creating user $POSTGRES_USER..."
-        PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE USER \"$POSTGRES_USER\" WITH PASSWORD '$POSTGRES_PASSWORD';" || {
+        PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "CREATE USER \"$POSTGRES_USER\" WITH PASSWORD '$POSTGRES_PASSWORD';" || {
           echo "Failed to create user, checking if user already exists..."
-          PGPASSWORD=postgres psql -h localhost -U postgres -c "SELECT 1 FROM pg_user WHERE usename = '$POSTGRES_USER';" | grep -q 1 && echo "User already exists" || exit 1
+          PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "SELECT 1 FROM pg_user WHERE usename = '$POSTGRES_USER';" | grep -q 1 && echo "User already exists" || exit 1
         }
         
-        echo "Creating database $PGDATABASE..."
-        PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE $PGDATABASE OWNER \"$POSTGRES_USER\";" || {
+        echo "Creating database $TARGET_DATABASE..."
+        PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "CREATE DATABASE $TARGET_DATABASE OWNER \"$POSTGRES_USER\";" || {
           echo "Failed to create database, checking if database already exists..."
-          PGPASSWORD=postgres psql -h localhost -U postgres -c "SELECT 1 FROM pg_database WHERE datname = '$PGDATABASE';" | grep -q 1 && echo "Database already exists" || exit 1
+          PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "SELECT 1 FROM pg_database WHERE datname = '$TARGET_DATABASE';" | grep -q 1 && echo "Database already exists" || exit 1
         }
+        
+        # Restore PGDATABASE for subsequent operations
+        export PGDATABASE="$TARGET_DATABASE"
         
         # Verify database connection
         echo "Verifying database connection..."
