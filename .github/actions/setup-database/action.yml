@@ -19,6 +19,13 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |      
+
+        # Copy test environment file
+        cp .env.test .env
+        
+        # Read database configuration from .env.test
+        export $(grep -v '^#' .env.test | xargs)
+
         echo "Database config: POSTGRES_DB=$POSTGRES_DB, POSTGRES_USER=$POSTGRES_USER"
         
         # Wait for PostgreSQL to be ready
