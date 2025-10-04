@@ -61,8 +61,6 @@ jobs:
     name: ⚙️ Run integration tests
     runs-on: ubuntu-latest
     needs: lint
-    env:
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
     defaults:
       run:
         working-directory: ./backend
