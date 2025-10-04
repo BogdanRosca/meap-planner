@@ -29,7 +29,7 @@ runs:
         # Read database configuration from .env.test
         export $(grep -v '^#' .env.test | xargs)
       
-        echo "Database config: DB_NAME=$DB_NAME, DB_USER=$DB_USER"
+        echo "Database config: PGDATABASE=$PGDATABASE, POSTGRES_USER=$POSTGRES_USER"
         
         # Wait for PostgreSQL to be ready
         until pg_isready -h localhost -p 5432 -U postgres; do
@@ -38,11 +38,11 @@ runs:
         done
         
         # Create user and database
-        PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE USER \"$DB_USER\" WITH PASSWORD '$DB_PASSWORD';"
-        PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE $DB_NAME OWNER \"$DB_USER\";"
+        PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE USER \"$POSTGRES_USER\" WITH PASSWORD '$POSTGRES_PASSWORD';"
+        PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE $PGDATABASE OWNER \"$POSTGRES_USER\";"
         
         # Create recipes table 
-        PGPASSWORD="$DB_PASSWORD" psql -h localhost -U "$DB_USER" -d "$DB_NAME" -c "
+        PGPASSWORD="$POSTGRES_PASSWORD" psql -h localhost -U "$POSTGRES_USER" -d "$PGDATABASE" -c "
         CREATE TABLE IF NOT EXISTS recipes (
           id SERIAL PRIMARY KEY,
           name VARCHAR(255) NOT NULL,
@@ -55,7 +55,7 @@ runs:
         );"
 
         # Insert sample recipe
-        PGPASSWORD="$DB_PASSWORD" psql -h localhost -U "$DB_USER" -d "$DB_NAME" -c "
+        PGPASSWORD="$POSTGRES_PASSWORD" psql -h localhost -U "$POSTGRES_USER" -d "$PGDATABASE" -c "
         INSERT INTO recipes (name, category, main_ingredients, common_ingredients, instructions, prep_time, portions) 
         VALUES (
           'Test Pasta', 

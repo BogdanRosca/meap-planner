@@ -19,11 +19,11 @@ class DatabaseClient:
                  database: Optional[str] = None, user: Optional[str] = None, 
                  password: Optional[str] = None):
         """Initialize database client with connection parameters"""
-        self.host = host or os.getenv("DB_HOST")
-        self.port = port or os.getenv("DB_PORT")
-        self.database = database or os.getenv("DB_NAME")
-        self.user = user or os.getenv("DB_USER")
-        self.password = password or os.getenv("DB_PASSWORD")
+        self.host = host or os.getenv("PGHOST")
+        self.port = port or os.getenv("PGPORT")
+        self.database = database or os.getenv("PGDATABASE")
+        self.user = user or os.getenv("POSTGRES_USER")
+        self.password = password or os.getenv("POSTGRES_PASSWORD")
         self._connection = None
     
     def connect(self):
