@@ -5,9 +5,6 @@ inputs:
     description: 'Working directory containing .env.test file'
     required: true
     default: './backend'
-  postgres-password:
-    description: 'PostgreSQL password for the database user'
-    required: true
 
 runs:
   using: 'composite'
@@ -21,13 +18,7 @@ runs:
     - name: Set up database
       shell: bash
       working-directory: ${{ inputs.working-directory }}
-      run: |
-        # Copy test environment file
-        cp .env.test .env
-        
-        # Read database configuration from .env.test
-        export $(grep -v '^#' .env.test | xargs)
-      
+      run: |      
         echo "Database config: PGDATABASE=$PGDATABASE, POSTGRES_USER=$POSTGRES_USER"
         
         # Wait for PostgreSQL to be ready

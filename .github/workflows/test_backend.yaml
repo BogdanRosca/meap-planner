@@ -62,6 +62,8 @@ jobs:
     needs: lint
     env:
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_USER: chubby.user
+      POSTGRES_DB: supermarket
     defaults:
       run:
         working-directory: ./backend
