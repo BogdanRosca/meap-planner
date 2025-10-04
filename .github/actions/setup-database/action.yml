@@ -19,7 +19,7 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |      
-        echo "Database config: PGDATABASE=$PGDATABASE, POSTGRES_USER=$POSTGRES_USER"
+        echo "Database config: POSTGRES_DB=$POSTGRES_DB, POSTGRES_USER=$POSTGRES_USER"
         
         # Wait for PostgreSQL to be ready
         until pg_isready -h localhost -p 5432 -U postgres; do
@@ -29,8 +29,8 @@ runs:
         
         # Verify database connection
         echo "Verifying database connection..."
-        PGPASSWORD="$POSTGRES_PASSWORD" psql -h localhost -U "$POSTGRES_USER" -d "$PGDATABASE" -c "SELECT version();" || {
-          echo "Failed to connect to database $PGDATABASE as user $POSTGRES_USER"
+        PGPASSWORD="$POSTGRES_PASSWORD" psql -h localhost -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT version();" || {
+          echo "Failed to connect to database $POSTGRES_DB as user $POSTGRES_USER"
           exit 1
         }
         
