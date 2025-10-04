@@ -3,27 +3,21 @@ description: 'Start FastAPI server and test health endpoint'
 inputs:
   host:
     description: 'Server host'
-    required: false
     default: '127.0.0.1'
   port:
     description: 'Server port'
-    required: false
     default: '8000'
   app-module:
     description: 'FastAPI app module (e.g., main:app)'
-    required: false
     default: 'main:app'
   health-endpoint:
     description: 'Health check endpoint path'
-    required: false
     default: '/health'
   startup-timeout:
     description: 'Seconds to wait for server startup'
-    required: false
     default: '5'
   working-directory:
     description: 'Working directory to run commands from'
-    required: false
     default: '.'
 
 runs:

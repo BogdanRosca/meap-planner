@@ -420,11 +420,11 @@ class TestDatabaseClientInitialization:
     """Test DatabaseClient initialization"""
     
     @patch.dict('os.environ', {
-        'DB_HOST': 'test_host',
-        'DB_PORT': '5432',
-        'DB_NAME': 'test_db',
-        'DB_USER': 'test_user',
-        'DB_PASSWORD': 'test_pass'
+        'PGHOST': 'test_host',
+        'PGPORT': '5432',
+        'PGDATABASE': 'test_db',
+        'POSTGRES_USER': 'test_user',
+        'POSTGRES_PASSWORD': 'test_pass'
     })
     def test_init_with_env_variables(self):
         """Test initialization with environment variables"""
