@@ -63,7 +63,7 @@ jobs:
     env:
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_USER: chubby.user
-      POSTGRES_DB: supermarket
+      PGDATABASE: supermarket
     defaults:
       run:
         working-directory: ./backend
@@ -100,7 +100,6 @@ jobs:
       uses: ./.github/actions/setup-database
       with:
         working-directory: './backend'
-        postgres-password: ${{ secrets.POSTGRES_PASSWORD }}
 
     - name: ▶️ Test server startup
       uses: ./.github/actions/test-server-start
