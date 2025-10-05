@@ -8,12 +8,14 @@ interface TopBarProps {
   };
   onNavigate?: (section: string) => void;
   onSearch?: (query: string) => void;
+  onMenuToggle?: () => void;
 }
 
 const TopBar: React.FC<TopBarProps> = ({ 
   currentUser = { name: 'Bogdan Rosca' }, 
   onNavigate,
-  onSearch 
+  onSearch,
+  onMenuToggle 
 }) => {
   const [activeTab, setActiveTab] = useState('Meal Planner');
   const [searchQuery, setSearchQuery] = useState('');
@@ -44,6 +46,15 @@ const TopBar: React.FC<TopBarProps> = ({
   return (
     <header className="top-bar">
       <div className="top-bar-container">
+        {/* Mobile Menu Button */}
+        <button className="mobile-menu-btn" onClick={onMenuToggle}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+
         {/* Logo Section */}
         <div className="logo-section">
           <div className="logo-icon">🍴</div>
