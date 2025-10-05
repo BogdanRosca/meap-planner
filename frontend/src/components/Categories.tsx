@@ -18,7 +18,7 @@ const Categories: React.FC<CategoriesProps> = ({ onCategoryClick }) => {
     {
       id: 'breakfast',
       name: 'Breakfast',
-      icon: '☀️',
+      icon: '☕️',
       count: 6,
       color: '#5b8266' // Viridian
     },
