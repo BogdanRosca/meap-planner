@@ -61,7 +61,7 @@ jobs:
         CI: true
 
   integration_tests:
-    name: 🧪 Run integration tests
+    name: ⚙️ Run integration tests
     runs-on: ubuntu-latest
 
     defaults:
