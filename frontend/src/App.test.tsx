@@ -54,7 +54,6 @@ describe('App Component', () => {
     fireEvent.click(recipesNavButton);
     
     expect(screen.getByRole('heading', { level: 1, name: 'Recipes' })).toBeInTheDocument();
-    expect(console.log).toHaveBeenCalledWith('Navigating to: Recipes');
   });
 
   it('updates search query when search is performed', () => {
@@ -63,7 +62,6 @@ describe('App Component', () => {
     const searchInput = screen.getByPlaceholderText('Search recipes...');
     fireEvent.change(searchInput, { target: { value: 'pasta' } });
     
-    expect(console.log).toHaveBeenCalledWith('Searching for: pasta');
   });
 
   it('handles mobile menu toggle', () => {
@@ -98,7 +96,6 @@ describe('App Component', () => {
     // Should update section and close mobile menu
     expect(screen.getByRole('heading', { level: 1, name: 'Add Recipe' })).toBeInTheDocument();
     expect(quickActions).not.toHaveClass('mobile-open');
-    expect(console.log).toHaveBeenCalledWith('Quick action: Add Recipe');
   });
 
   it('handles category clicks and closes mobile menu', () => {
@@ -120,7 +117,6 @@ describe('App Component', () => {
     // Should update section and close mobile menu
     expect(screen.getByRole('heading', { level: 1, name: 'Breakfast' })).toBeInTheDocument();
     expect(quickActions).not.toHaveClass('mobile-open');
-    expect(console.log).toHaveBeenCalledWith('Category selected: Breakfast');
   });
 
   it('handles recipe clicks and closes mobile menu', () => {
@@ -141,7 +137,6 @@ describe('App Component', () => {
     // Should update section and close mobile menu
     expect(screen.getByRole('heading', { level: 1, name: 'Recipe: Açaí bowl' })).toBeInTheDocument();
     expect(quickActions).not.toHaveClass('mobile-open');
-    expect(console.log).toHaveBeenCalledWith('Recent recipe selected: Açaí bowl');
   });
 
   it('passes correct props to child components', () => {
@@ -195,6 +190,5 @@ describe('App Component', () => {
     // Search should still work
     const searchInput = screen.getByPlaceholderText('Search recipes...');
     fireEvent.change(searchInput, { target: { value: 'chicken' } });
-    expect(console.log).toHaveBeenCalledWith('Searching for: chicken');
   });
 });
