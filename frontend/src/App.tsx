@@ -53,36 +53,6 @@ function App() {
         </div>
 
         <div className="home-content">
-          <div className="welcome-section">
-            <h2>Welcome to MealCraft</h2>
-            <p>Your personal meal planning companion</p>
-          </div>
-
-          <div className="features-grid">
-            <div className="feature-card">
-              <div className="feature-icon">📝</div>
-              <h3>Meal Planner</h3>
-              <p>Plan your meals for the week and stay organized</p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-icon">🍳</div>
-              <h3>Recipes</h3>
-              <p>Discover and save your favorite recipes</p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-icon">🛒</div>
-              <h3>Shopping List</h3>
-              <p>Generate shopping lists from your meal plans</p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-icon">📊</div>
-              <h3>Analytics</h3>
-              <p>Track your meal planning habits and preferences</p>
-            </div>
-          </div>
 
           {searchQuery && (
             <div className="search-results">
