@@ -37,7 +37,7 @@ function App() {
   return (
     <div className="App">
       <TopBar 
-        currentUser={{ name: 'Bogdan Rosca' }}
+        currentUser={{ name: 'John Doe' }}
         onNavigate={handleNavigation}
         onSearch={handleSearch}
         onMenuToggle={handleMobileMenuToggle}
