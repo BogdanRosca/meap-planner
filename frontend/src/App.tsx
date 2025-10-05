@@ -28,6 +28,12 @@ function App() {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  const handleCategoryClick = (category: string) => {
+    setCurrentSection(category);
+    setIsMobileMenuOpen(false); // Close mobile menu when category is selected
+    console.log(`Category selected: ${category}`);
+  };
+
   return (
     <div className="App">
       <TopBar 
@@ -38,6 +44,7 @@ function App() {
       />
       <QuickActions 
         onActionClick={handleQuickAction}
+        onCategoryClick={handleCategoryClick}
         isMobileOpen={isMobileMenuOpen}
       />
       <main className="App-main">

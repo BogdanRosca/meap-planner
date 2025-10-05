@@ -1,12 +1,14 @@
 import React from 'react';
 import './QuickActions.css';
+import Categories from './Categories';
 
 interface QuickActionsProps {
   onActionClick?: (action: string) => void;
+  onCategoryClick?: (category: string) => void;
   isMobileOpen?: boolean;
 }
 
-const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick, isMobileOpen = false }) => {
+const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick, onCategoryClick, isMobileOpen = false }) => {
   const actions = [
     {
       id: 'add-recipe',
@@ -54,6 +56,9 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick, isMobileOpen
           </button>
         ))}
       </div>
+      
+      {/* Categories Section */}
+      <Categories onCategoryClick={onCategoryClick} />
     </aside>
   );
 };
