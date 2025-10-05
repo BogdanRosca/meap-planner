@@ -38,7 +38,8 @@
   margin: 20px 0;
 }
 
-.fetch-button, .add-button {
+.fetch-button,
+.add-button {
   background: linear-gradient(135deg, #294936 0%, #5b8266 100%);
   border: none;
   padding: 12px 24px;
@@ -51,7 +52,8 @@
   box-shadow: 0 2px 8px rgba(41, 73, 54, 0.3);
 }
 
-.fetch-button:hover:not(:disabled), .add-button:hover:not(:disabled) {
+.fetch-button:hover:not(:disabled),
+.add-button:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(41, 73, 54, 0.4);
 }
@@ -71,14 +73,6 @@
   margin: 20px;
   border-left: 4px solid #c62828;
 }
-
-
-
-
-
-
-
-
 
 /* Responsive Design */
 @media (max-width: 1024px) {
@@ -137,7 +131,8 @@
   font-size: 14px;
 }
 
-.ingredients h4, .instructions h4 {
+.ingredients h4,
+.instructions h4 {
   color: #34495e;
   margin-bottom: 8px;
   margin-top: 16px;
@@ -338,11 +333,11 @@
   .App-header {
     padding: 20px;
   }
-  
+
   .recipes-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .recipe-details {
     flex-direction: column;
     gap: 8px;

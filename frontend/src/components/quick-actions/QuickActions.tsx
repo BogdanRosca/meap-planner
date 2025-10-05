@@ -4,36 +4,41 @@ import Categories from '../categories/Categories';
 import RecentRecipes from '../recent-recipes/RecentRecipes';
 
 interface QuickActionsProps {
-  onActionClick?: (action: string) => void;
-  onCategoryClick?: (category: string) => void;
-  onRecipeClick?: (recipe: any) => void;
+  onActionClick?: (_action: string) => void;
+  onCategoryClick?: (_category: string) => void;
+  onRecipeClick?: (_recipe: any) => void;
   isMobileOpen?: boolean;
 }
 
-const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick, onCategoryClick, onRecipeClick, isMobileOpen = false }) => {
+const QuickActions: React.FC<QuickActionsProps> = ({
+  onActionClick,
+  onCategoryClick: _onCategoryClick,
+  onRecipeClick: _onRecipeClick,
+  isMobileOpen = false,
+}) => {
   const actions = [
     {
       id: 'add-recipe',
       title: 'Add Recipe',
       icon: '🍳',
-      description: 'Create a new recipe'
+      description: 'Create a new recipe',
     },
     {
       id: 'plan-meals',
       title: 'Plan Meals',
       icon: '📅',
-      description: 'Plan your weekly meals'
+      description: 'Plan your weekly meals',
     },
     {
       id: 'shopping-list',
       title: 'Shopping List',
       icon: '🛒',
-      description: 'Create shopping list'
-    }
+      description: 'Create shopping list',
+    },
   ];
 
-  const handleActionClick = (actionId: string, actionTitle: string) => {
-    onActionClick?.(actionTitle);
+  const handleActionClick = (action: string) => {
+    onActionClick?.(action);
   };
 
   return (
@@ -42,11 +47,11 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick, onCategoryCl
         <h3>Quick Actions</h3>
       </div>
       <div className="quick-actions-list">
-        {actions.map((action) => (
+        {actions.map(action => (
           <button
             key={action.id}
             className="quick-action-item"
-            onClick={() => handleActionClick(action.id, action.title)}
+            onClick={() => handleActionClick(action.title)}
           >
             <div className="action-icon">{action.icon}</div>
             <div className="action-content">
@@ -57,12 +62,12 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick, onCategoryCl
           </button>
         ))}
       </div>
-      
+
       {/* Categories Section */}
-      <Categories onCategoryClick={onCategoryClick} />
-      
+      <Categories onCategoryClick={_onCategoryClick} />
+
       {/* Recent Recipes Section */}
-      <RecentRecipes onRecipeClick={onRecipeClick} />
+      <RecentRecipes onRecipeClick={_onRecipeClick} />
     </aside>
   );
 };

@@ -14,7 +14,6 @@ const Home: React.FC<HomeProps> = ({ searchQuery }) => {
           <p>Search functionality will be implemented here</p>
         </div>
       )}
-      
     </div>
   );
 };

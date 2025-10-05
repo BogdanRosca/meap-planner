@@ -91,22 +91,22 @@
   .recent-recipes-section {
     padding: 0 12px;
   }
-  
+
   .recent-recipe-item {
     padding: 10px 12px;
     gap: 10px;
   }
-  
+
   .recipe-image {
     font-size: 28px;
     width: 40px;
     height: 40px;
   }
-  
+
   .recipe-name {
     font-size: 14px;
   }
-  
+
   .recipe-category {
     font-size: 12px;
   }
@@ -116,7 +116,7 @@
   .recent-recipes-section {
     margin-top: 20px;
   }
-  
+
   .recent-recipe-item {
     padding: 8px 10px;
   }

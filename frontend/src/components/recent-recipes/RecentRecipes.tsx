@@ -9,7 +9,7 @@ interface Recipe {
 }
 
 interface RecentRecipesProps {
-  onRecipeClick?: (recipe: Recipe) => void;
+  onRecipeClick?: (_recipe: Recipe) => void;
 }
 
 const RecentRecipes: React.FC<RecentRecipesProps> = ({ onRecipeClick }) => {
@@ -18,26 +18,26 @@ const RecentRecipes: React.FC<RecentRecipesProps> = ({ onRecipeClick }) => {
       id: 'acai-bowl',
       name: 'Açaí bowl',
       category: 'Breakfast',
-      image: '🍓'
+      image: '🍓',
     },
     {
       id: 'grilled-salmon',
       name: 'Grilled Salmon',
       category: 'Dinner',
-      image: '🍣'
+      image: '🍣',
     },
     {
       id: 'avocado-toast',
       name: 'Avocado Toast',
       category: 'Breakfast',
-      image: '🥑'
+      image: '🥑',
     },
     {
       id: 'chicken-salad',
       name: 'Chicken Salad',
       category: 'Lunch',
-      image: '🥗'
-    }
+      image: '🥗',
+    },
   ];
 
   const handleRecipeClick = (recipe: Recipe) => {
@@ -50,7 +50,7 @@ const RecentRecipes: React.FC<RecentRecipesProps> = ({ onRecipeClick }) => {
         <h3>Recent Recipes</h3>
       </div>
       <div className="recent-recipes-list">
-        {recentRecipes.map((recipe) => (
+        {recentRecipes.map(recipe => (
           <button
             key={recipe.id}
             className="recent-recipe-item"

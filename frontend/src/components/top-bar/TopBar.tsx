@@ -6,25 +6,25 @@ interface TopBarProps {
     name: string;
     avatar?: string;
   };
-  onNavigate?: (section: string) => void;
-  onSearch?: (query: string) => void;
+  onNavigate?: (_section: string) => void;
+  onSearch?: (_query: string) => void;
   onMenuToggle?: () => void;
 }
 
-const TopBar: React.FC<TopBarProps> = ({ 
-  currentUser = { name: 'John Doe' }, 
+const TopBar: React.FC<TopBarProps> = ({
+  currentUser = { name: 'John Doe' },
   onNavigate,
   onSearch,
-  onMenuToggle 
+  onMenuToggle,
 }) => {
   const [activeTab, setActiveTab] = useState('Meal Planner');
   const [searchQuery, setSearchQuery] = useState('');
 
   const navigationItems = [
     'Meal Planner',
-    'Recipes', 
+    'Recipes',
     'Shopping List',
-    'Analytics'
+    'Analytics',
   ];
 
   const handleNavClick = (item: string) => {
@@ -48,7 +48,14 @@ const TopBar: React.FC<TopBarProps> = ({
       <div className="top-bar-container">
         {/* Mobile Menu Button */}
         <button className="mobile-menu-btn" onClick={onMenuToggle}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -63,7 +70,7 @@ const TopBar: React.FC<TopBarProps> = ({
 
         {/* Navigation Section */}
         <nav className="navigation">
-          {navigationItems.map((item) => (
+          {navigationItems.map(item => (
             <button
               key={item}
               className={`nav-item ${activeTab === item ? 'active' : ''}`}
@@ -86,12 +93,12 @@ const TopBar: React.FC<TopBarProps> = ({
                 className="search-input"
               />
               <button type="submit" className="search-button">
-                <svg 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
                   strokeWidth="2"
                 >
                   <circle cx="11" cy="11" r="8" />
@@ -113,7 +120,10 @@ const TopBar: React.FC<TopBarProps> = ({
                 <img src={currentUser.avatar} alt={currentUser.name} />
               ) : (
                 <div className="avatar-placeholder">
-                  {currentUser.name.split(' ').map(n => n[0]).join('')}
+                  {currentUser.name
+                    .split(' ')
+                    .map(n => n[0])
+                    .join('')}
                 </div>
               )}
             </div>

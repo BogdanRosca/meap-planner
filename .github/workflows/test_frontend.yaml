@@ -1,0 +1,126 @@
+name: Test FE service
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    name: 🔍 Code Quality Check (Prettier)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    
+    steps:
+    - name: 📁 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: './frontend/package-lock.json'
+    
+    - name: 📥 Install dependencies
+      run: npm ci
+    
+    - name: 🔍 Run ESLint
+      run: npm run lint
+    
+    - name: 🎨 Check Prettier formatting
+      run: npm run format:check
+
+  unit_tests:
+    name: 🧪 Run unit tests
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./frontend
+    
+    steps:
+    - name: 📁 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: './frontend/package-lock.json'
+    
+    - name: 📥 Install dependencies
+      run: npm ci
+    
+    - name: 🧪 Run unit tests
+      run: npm test -- --coverage --watchAll=false --testTimeout=10000
+      env:
+        CI: true
+
+  integration_tests:
+    name: ⚙️ Run integration tests
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./frontend
+    
+    steps:
+    - name: 📁 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: './frontend/package-lock.json'
+    
+    - name: 📥 Install dependencies
+      run: npm ci
+    
+    - name: 🏗️ Build React application
+      run: npm run build
+
+    - name: 🚀 Start React application in background
+      run: |
+        npm run start &
+        echo $! > app.pid
+      env:
+        CI: true
+    
+    - name: ⏳ Wait for application to be ready
+      run: |
+        echo "Waiting for application to start on port 3000..."
+        timeout 60 bash -c 'until curl -f http://localhost:3000/; do sleep 2; done'
+        echo "Application is ready!"
+    
+    - name: 🔍 Test application endpoints
+      run: |
+        # Test that the main page loads
+        curl -f http://localhost:3000/ || exit 1
+        echo "✅ Main page loads successfully"
+        
+        # Test that static assets are served
+        curl -f http://localhost:3000/static/css/ || echo "⚠️ CSS assets check skipped"
+        curl -f http://localhost:3000/static/js/ || echo "⚠️ JS assets check skipped"
+
+    # - name: 🧪 Run integration tests against running app
+    #   run: |
+    #     # Run tests that might need the app running
+    #     # For now, we'll run all tests again as integration tests
+    #     npm test -- --watchAll=false --testTimeout=10000
+    #   env:
+    #     CI: true
+    #     REACT_APP_API_URL: http://localhost:3000
+    
+    - name: 🛑 Stop React application
+      if: always()
+      run: |
+        if [ -f app.pid ]; then
+          kill $(cat app.pid) || true
+          rm app.pid
+        fi

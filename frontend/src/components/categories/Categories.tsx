@@ -10,7 +10,7 @@ interface Category {
 }
 
 interface CategoriesProps {
-  onCategoryClick?: (category: string) => void;
+  onCategoryClick?: (_category: string) => void;
 }
 
 const Categories: React.FC<CategoriesProps> = ({ onCategoryClick }) => {
@@ -20,34 +20,30 @@ const Categories: React.FC<CategoriesProps> = ({ onCategoryClick }) => {
       name: 'Breakfast',
       icon: '☕️',
       count: 6,
-      color: '#5b8266' // Viridian
+      color: '#5b8266', // Viridian
     },
     {
       id: 'snack',
       name: 'Snack',
       icon: '🍎',
       count: 2,
-      color: '#294936' // Brunswick green
+      color: '#294936', // Brunswick green
     },
     {
       id: 'lunch',
       name: 'Lunch',
       icon: '☀️',
       count: 1,
-      color: '#3e6259' // Feldgrau
+      color: '#3e6259', // Feldgrau
     },
     {
       id: 'dinner',
       name: 'Dinner',
       icon: '🌙',
       count: 1,
-      color: '#212922' // Black olive
-    }
+      color: '#212922', // Black olive
+    },
   ];
-
-  const handleCategoryClick = (categoryName: string) => {
-    onCategoryClick?.(categoryName);
-  };
 
   return (
     <div className="categories-section">
@@ -55,12 +51,14 @@ const Categories: React.FC<CategoriesProps> = ({ onCategoryClick }) => {
         <h3>Categories</h3>
       </div>
       <div className="categories-list">
-        {categories.map((category) => (
+        {categories.map(category => (
           <button
             key={category.id}
             className="category-item"
-            onClick={() => handleCategoryClick(category.name)}
-            style={{ '--category-color': category.color } as React.CSSProperties}
+            onClick={() => onCategoryClick?.(category.name)}
+            style={
+              { '--category-color': category.color } as React.CSSProperties
+            }
           >
             <div className="category-content">
               <div className="category-icon">{category.icon}</div>

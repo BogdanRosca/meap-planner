@@ -239,11 +239,11 @@
   .user-name {
     display: none;
   }
-  
+
   .navigation {
     gap: 4px;
   }
-  
+
   .nav-item {
     padding: 6px 12px;
     font-size: 13px;
@@ -254,24 +254,24 @@
   .mobile-menu-btn {
     display: block;
   }
-  
+
   .top-bar-container {
     padding: 0 16px;
     gap: 16px;
   }
-  
+
   .logo-text {
     font-size: 20px;
   }
-  
+
   .navigation {
     display: none;
   }
-  
+
   .search-section {
     max-width: 250px;
   }
-  
+
   .search-input {
     font-size: 13px;
     padding: 8px 14px;
@@ -283,11 +283,11 @@
   .top-bar-container {
     gap: 12px;
   }
-  
+
   .search-section {
     max-width: 200px;
   }
-  
+
   .language-selector {
     display: none;
   }
