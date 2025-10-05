@@ -42,7 +42,6 @@ const RecentRecipes: React.FC<RecentRecipesProps> = ({ onRecipeClick }) => {
 
   const handleRecipeClick = (recipe: Recipe) => {
     onRecipeClick?.(recipe);
-    console.log(`Recent recipe clicked: ${recipe.name}`);
   };
 
   return (
