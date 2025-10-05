@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
   pull_request:
     branches: [ main ]
+  push:
+    branches: [ add-fe-test-workflow ]
 
 jobs:
   unit_tests:
