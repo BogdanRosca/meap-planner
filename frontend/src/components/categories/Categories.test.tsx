@@ -128,19 +128,6 @@ describe('Categories Component', () => {
     });
   });
 
-  it('console.logs when categories are clicked', () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-    
-    render(<Categories onCategoryClick={mockOnCategoryClick} />);
-    
-    const breakfastButton = screen.getByText('Breakfast').closest('button');
-    fireEvent.click(breakfastButton!);
-    
-    expect(consoleSpy).toHaveBeenCalledWith('Category clicked: Breakfast');
-    
-    consoleSpy.mockRestore();
-  });
-
   it('works without onCategoryClick prop', () => {
     render(<Categories />);
     

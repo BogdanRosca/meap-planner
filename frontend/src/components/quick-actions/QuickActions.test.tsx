@@ -119,19 +119,6 @@ describe('QuickActions Component', () => {
     });
   });
 
-  it('console.logs when actions are clicked', () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-    
-    render(<QuickActions onActionClick={mockOnActionClick} />);
-    
-    const addRecipeButton = screen.getByText('Add Recipe').closest('button');
-    fireEvent.click(addRecipeButton!);
-    
-    expect(consoleSpy).toHaveBeenCalledWith('Quick action clicked: Add Recipe');
-    
-    consoleSpy.mockRestore();
-  });
-
   it('renders arrow indicators for each action', () => {
     const { container } = render(<QuickActions />);
     

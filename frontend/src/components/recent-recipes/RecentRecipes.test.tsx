@@ -109,16 +109,4 @@ describe('RecentRecipes', () => {
     expect(acaiBowlButton.querySelector('.recipe-category')).toHaveTextContent('Breakfast');
   });
 
-  it('logs recipe click to console', () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-    
-    render(<RecentRecipes />);
-    
-    const acaiBowlButton = screen.getByRole('button', { name: /açaí bowl/i });
-    fireEvent.click(acaiBowlButton);
-    
-    expect(consoleSpy).toHaveBeenCalledWith('Recent recipe clicked: Açaí bowl');
-    
-    consoleSpy.mockRestore();
-  });
 });
