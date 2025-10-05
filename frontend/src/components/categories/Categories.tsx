@@ -27,21 +27,21 @@ const Categories: React.FC<CategoriesProps> = ({ onCategoryClick }) => {
       name: 'Snack',
       icon: '🍎',
       count: 2,
-      color: '#d946ef' // Pink/Purple
+      color: '#294936' // Brunswick green
     },
     {
       id: 'lunch',
       name: 'Lunch',
       icon: '☀️',
       count: 1,
-      color: '#3b82f6' // Blue
+      color: '#3e6259' // Feldgrau
     },
     {
       id: 'dinner',
       name: 'Dinner',
       icon: '🌙',
       count: 1,
-      color: '#8b5cf6' // Purple
+      color: '#212922' // Black olive
     }
   ];
 
