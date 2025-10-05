@@ -38,13 +38,13 @@ function App() {
 
   return (
     <div className="App">
-      <TopBar 
+      <TopBar
         currentUser={{ name: 'John Doe' }}
         onNavigate={handleNavigation}
         onSearch={handleSearch}
         onMenuToggle={handleMobileMenuToggle}
       />
-      <QuickActions 
+      <QuickActions
         onActionClick={handleQuickAction}
         onCategoryClick={handleCategoryClick}
         onRecipeClick={handleRecipeClick}

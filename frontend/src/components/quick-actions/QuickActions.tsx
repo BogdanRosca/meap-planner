@@ -10,26 +10,31 @@ interface QuickActionsProps {
   isMobileOpen?: boolean;
 }
 
-const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick, onCategoryClick, onRecipeClick, isMobileOpen = false }) => {
+const QuickActions: React.FC<QuickActionsProps> = ({
+  onActionClick,
+  onCategoryClick,
+  onRecipeClick,
+  isMobileOpen = false,
+}) => {
   const actions = [
     {
       id: 'add-recipe',
       title: 'Add Recipe',
       icon: '🍳',
-      description: 'Create a new recipe'
+      description: 'Create a new recipe',
     },
     {
       id: 'plan-meals',
       title: 'Plan Meals',
       icon: '📅',
-      description: 'Plan your weekly meals'
+      description: 'Plan your weekly meals',
     },
     {
       id: 'shopping-list',
       title: 'Shopping List',
       icon: '🛒',
-      description: 'Create shopping list'
-    }
+      description: 'Create shopping list',
+    },
   ];
 
   const handleActionClick = (actionId: string, actionTitle: string) => {
@@ -42,7 +47,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick, onCategoryCl
         <h3>Quick Actions</h3>
       </div>
       <div className="quick-actions-list">
-        {actions.map((action) => (
+        {actions.map(action => (
           <button
             key={action.id}
             className="quick-action-item"
@@ -57,10 +62,10 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick, onCategoryCl
           </button>
         ))}
       </div>
-      
+
       {/* Categories Section */}
       <Categories onCategoryClick={onCategoryClick} />
-      
+
       {/* Recent Recipes Section */}
       <RecentRecipes onRecipeClick={onRecipeClick} />
     </aside>

@@ -105,19 +105,19 @@
   .categories-section {
     padding: 0 12px;
   }
-  
+
   .category-item {
     padding: 10px 12px;
   }
-  
+
   .category-icon {
     font-size: 16px;
   }
-  
+
   .category-name {
     font-size: 14px;
   }
-  
+
   .category-count {
     font-size: 12px;
     padding: 3px 6px;
@@ -128,7 +128,7 @@
   .categories-section {
     margin-top: 20px;
   }
-  
+
   .category-item {
     padding: 8px 10px;
   }
