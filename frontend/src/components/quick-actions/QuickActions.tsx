@@ -1,14 +1,16 @@
 import React from 'react';
 import './QuickActions.css';
 import Categories from '../categories/Categories';
+import RecentRecipes from '../recent-recipes/RecentRecipes';
 
 interface QuickActionsProps {
   onActionClick?: (action: string) => void;
   onCategoryClick?: (category: string) => void;
+  onRecipeClick?: (recipe: any) => void;
   isMobileOpen?: boolean;
 }
 
-const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick, onCategoryClick, isMobileOpen = false }) => {
+const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick, onCategoryClick, onRecipeClick, isMobileOpen = false }) => {
   const actions = [
     {
       id: 'add-recipe',
@@ -59,6 +61,9 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick, onCategoryCl
       
       {/* Categories Section */}
       <Categories onCategoryClick={onCategoryClick} />
+      
+      {/* Recent Recipes Section */}
+      <RecentRecipes onRecipeClick={onRecipeClick} />
     </aside>
   );
 };

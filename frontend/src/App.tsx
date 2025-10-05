@@ -35,6 +35,12 @@ function App() {
     console.log(`Category selected: ${category}`);
   };
 
+  const handleRecipeClick = (recipe: any) => {
+    setCurrentSection(`Recipe: ${recipe.name}`);
+    setIsMobileMenuOpen(false); // Close mobile menu when recipe is selected
+    console.log(`Recent recipe selected: ${recipe.name}`);
+  };
+
   return (
     <div className="App">
       <TopBar 
@@ -46,6 +52,7 @@ function App() {
       <QuickActions 
         onActionClick={handleQuickAction}
         onCategoryClick={handleCategoryClick}
+        onRecipeClick={handleRecipeClick}
         isMobileOpen={isMobileMenuOpen}
       />
       <main className="App-main">
