@@ -34,7 +34,6 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick, onCategoryCl
 
   const handleActionClick = (actionId: string, actionTitle: string) => {
     onActionClick?.(actionTitle);
-    console.log(`Quick action clicked: ${actionTitle}`);
   };
 
   return (

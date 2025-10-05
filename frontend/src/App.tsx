@@ -11,18 +11,15 @@ function App() {
 
   const handleNavigation = (section: string) => {
     setCurrentSection(section);
-    console.log(`Navigating to: ${section}`);
   };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    console.log(`Searching for: ${query}`);
   };
 
   const handleQuickAction = (action: string) => {
     setCurrentSection(action);
     setIsMobileMenuOpen(false); // Close mobile menu when action is selected
-    console.log(`Quick action: ${action}`);
   };
 
   const handleMobileMenuToggle = () => {
@@ -32,13 +29,11 @@ function App() {
   const handleCategoryClick = (category: string) => {
     setCurrentSection(category);
     setIsMobileMenuOpen(false); // Close mobile menu when category is selected
-    console.log(`Category selected: ${category}`);
   };
 
   const handleRecipeClick = (recipe: any) => {
     setCurrentSection(`Recipe: ${recipe.name}`);
     setIsMobileMenuOpen(false); // Close mobile menu when recipe is selected
-    console.log(`Recent recipe selected: ${recipe.name}`);
   };
 
   return (
