@@ -9,7 +9,7 @@ interface Recipe {
 }
 
 interface RecentRecipesProps {
-  onRecipeClick?: (recipe: Recipe) => void;
+  onRecipeClick?: (_recipe: Recipe) => void;
 }
 
 const RecentRecipes: React.FC<RecentRecipesProps> = ({ onRecipeClick }) => {

@@ -162,7 +162,7 @@ describe('App Component', () => {
 
     // Check Home component receives search query (initially empty)
     // We can verify this by checking if search results are not shown initially
-    const welcomeSection = screen.queryByText('Welcome');
+    screen.queryByText('Welcome');
     // Since search query is empty initially, welcome section should be visible if it exists
     // or the home component should render its default state
   });

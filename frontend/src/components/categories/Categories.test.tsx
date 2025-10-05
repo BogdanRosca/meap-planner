@@ -170,7 +170,7 @@ describe('Categories Component', () => {
   });
 
   it('has correct category data structure', () => {
-    const { container } = render(<Categories />);
+    render(<Categories />);
 
     // Test that each category has the expected structure
     const breakfastCategory = screen

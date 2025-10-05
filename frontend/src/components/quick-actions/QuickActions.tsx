@@ -4,16 +4,16 @@ import Categories from '../categories/Categories';
 import RecentRecipes from '../recent-recipes/RecentRecipes';
 
 interface QuickActionsProps {
-  onActionClick?: (action: string) => void;
-  onCategoryClick?: (category: string) => void;
-  onRecipeClick?: (recipe: any) => void;
+  onActionClick?: (_action: string) => void;
+  onCategoryClick?: (_category: string) => void;
+  onRecipeClick?: (_recipe: any) => void;
   isMobileOpen?: boolean;
 }
 
 const QuickActions: React.FC<QuickActionsProps> = ({
   onActionClick,
-  onCategoryClick,
-  onRecipeClick,
+  onCategoryClick: _onCategoryClick,
+  onRecipeClick: _onRecipeClick,
   isMobileOpen = false,
 }) => {
   const actions = [
@@ -37,8 +37,8 @@ const QuickActions: React.FC<QuickActionsProps> = ({
     },
   ];
 
-  const handleActionClick = (actionId: string, actionTitle: string) => {
-    onActionClick?.(actionTitle);
+  const handleActionClick = (action: string) => {
+    onActionClick?.(action);
   };
 
   return (
@@ -51,7 +51,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({
           <button
             key={action.id}
             className="quick-action-item"
-            onClick={() => handleActionClick(action.id, action.title)}
+            onClick={() => handleActionClick(action.title)}
           >
             <div className="action-icon">{action.icon}</div>
             <div className="action-content">
@@ -64,10 +64,10 @@ const QuickActions: React.FC<QuickActionsProps> = ({
       </div>
 
       {/* Categories Section */}
-      <Categories onCategoryClick={onCategoryClick} />
+      <Categories onCategoryClick={_onCategoryClick} />
 
       {/* Recent Recipes Section */}
-      <RecentRecipes onRecipeClick={onRecipeClick} />
+      <RecentRecipes onRecipeClick={_onRecipeClick} />
     </aside>
   );
 };

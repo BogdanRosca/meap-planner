@@ -6,8 +6,8 @@ interface TopBarProps {
     name: string;
     avatar?: string;
   };
-  onNavigate?: (section: string) => void;
-  onSearch?: (query: string) => void;
+  onNavigate?: (_section: string) => void;
+  onSearch?: (_query: string) => void;
   onMenuToggle?: () => void;
 }
 
