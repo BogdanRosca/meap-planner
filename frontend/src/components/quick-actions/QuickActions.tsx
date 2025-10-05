@@ -1,6 +1,6 @@
 import React from 'react';
 import './QuickActions.css';
-import Categories from './Categories';
+import Categories from '../categories/Categories';
 
 interface QuickActionsProps {
   onActionClick?: (action: string) => void;
