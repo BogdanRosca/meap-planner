@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import './App.css';
-import TopBar from './components/TopBar';
-import QuickActions from './components/QuickActions';
+import TopBar from './components/top-bar/TopBar';
+import QuickActions from './components/quick-actions/QuickActions';
+import Home from './pages/home/Home';
 
 function App() {
   const [currentSection, setCurrentSection] = useState('Meal Planner');
@@ -52,15 +53,7 @@ function App() {
           <h1>{currentSection}</h1>
         </div>
 
-        <div className="home-content">
-
-          {searchQuery && (
-            <div className="search-results">
-              <h3>Search Results for: "{searchQuery}"</h3>
-              <p>Search functionality will be implemented here</p>
-            </div>
-          )}
-        </div>
+        <Home searchQuery={searchQuery} />
       </main>
     </div>
   );
