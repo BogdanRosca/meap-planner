@@ -318,12 +318,14 @@ function App() {
         )}
 
         {/* Temporary debug info */}
-        <div style={{backgroundColor: '#333', padding: '10px', margin: '10px', borderRadius: '5px', fontSize: '14px'}}>
-          <p><strong>Debug Info:</strong></p>
-          <p>Recipes array length: {recipes.length}</p>
-          <p>Loading: {loading.toString()}</p>
-          <p>Error: {error || 'none'}</p>
-        </div>
+        {process.env.NODE_ENV !== 'production' && (
+          <div style={{backgroundColor: '#333', padding: '10px', margin: '10px', borderRadius: '5px', fontSize: '14px'}}>
+            <p><strong>Debug Info:</strong></p>
+            <p>Recipes array length: {recipes.length}</p>
+            <p>Loading: {loading.toString()}</p>
+            <p>Error: {error || 'none'}</p>
+          </div>
+        )}
         
         {recipes.length > 0 && (
           <div className="recipes">
