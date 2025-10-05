@@ -1,5 +1,5 @@
 import React from 'react';
-import './Categoriess';
+import './Categories.css';
 
 interface Category {
   id: string;
