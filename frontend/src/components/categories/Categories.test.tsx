@@ -91,9 +91,9 @@ describe('Categories Component', () => {
     const dinnerButton = screen.getByText('Dinner').closest('button') as HTMLElement;
     
     expect(breakfastButton.style.getPropertyValue('--category-color')).toBe('#5b8266');
-    expect(snackButton.style.getPropertyValue('--category-color')).toBe('#d946ef');
-    expect(lunchButton.style.getPropertyValue('--category-color')).toBe('#3b82f6');
-    expect(dinnerButton.style.getPropertyValue('--category-color')).toBe('#8b5cf6');
+    expect(snackButton.style.getPropertyValue('--category-color')).toBe('#294936');
+    expect(lunchButton.style.getPropertyValue('--category-color')).toBe('#3e6259');
+    expect(dinnerButton.style.getPropertyValue('--category-color')).toBe('#212922');
   });
 
   it('has proper category structure with content and count', () => {

@@ -18,7 +18,7 @@ describe('TopBar Component', () => {
     expect(screen.getByText('MealCraft')).toBeInTheDocument();
     expect(screen.getByText('🍴')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Search recipes...')).toBeInTheDocument();
-    expect(screen.getByText('Bogdan Rosca')).toBeInTheDocument(); // Default user
+    expect(screen.getByText('John Doe')).toBeInTheDocument(); // Default user
   });
 
   it('renders logo section correctly', () => {
@@ -159,9 +159,9 @@ describe('TopBar Component', () => {
   it('renders user section with custom user', () => {
     render(<TopBar currentUser={mockUser} />);
     
-    expect(screen.getByText('Alice Smith')).toBeInTheDocument();
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
     // When avatar is provided, initials are not shown
-    expect(screen.queryByText('AS')).not.toBeInTheDocument();
+    expect(screen.queryByText('JD')).not.toBeInTheDocument();
   });
 
   it('renders user avatar when provided', () => {

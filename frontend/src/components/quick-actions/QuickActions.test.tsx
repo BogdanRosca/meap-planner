@@ -87,16 +87,20 @@ describe('QuickActions Component', () => {
     
     // Check that Categories component is rendered
     expect(screen.getByText('Categories')).toBeInTheDocument();
-    expect(screen.getByText('Breakfast')).toBeInTheDocument();
-    expect(screen.getByText('Lunch')).toBeInTheDocument();
-    expect(screen.getByText('Dinner')).toBeInTheDocument();
-    expect(screen.getByText('Snack')).toBeInTheDocument();
+    // Use getAllByText to handle multiple elements with same text
+    expect(screen.getAllByText('Breakfast')).toHaveLength(3); // One in categories, two in recent recipes
+    expect(screen.getAllByText('Lunch')).toHaveLength(2); // One in categories, one in recent recipes
+    expect(screen.getAllByText('Dinner')).toHaveLength(2); // One in categories, one in recent recipes
+    expect(screen.getByText('Snack')).toBeInTheDocument(); // Only appears in categories
   });
 
   it('calls onCategoryClick when a category is clicked', () => {
     render(<QuickActions onCategoryClick={mockOnCategoryClick} />);
     
-    const breakfastButton = screen.getByText('Breakfast').closest('button');
+    // Find the category button specifically (the one with category-item class)
+    const categorySection = screen.getByText('Categories').closest('.categories-section');
+    const breakfastButton = categorySection?.querySelector('.category-item');
+    expect(breakfastButton).toBeTruthy();
     fireEvent.click(breakfastButton!);
     
     expect(mockOnCategoryClick).toHaveBeenCalledWith('Breakfast');
