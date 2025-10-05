@@ -12,7 +12,7 @@ interface TopBarProps {
 }
 
 const TopBar: React.FC<TopBarProps> = ({ 
-  currentUser = { name: 'Bogdan Rosca' }, 
+  currentUser = { name: 'John Doe' }, 
   onNavigate,
   onSearch,
   onMenuToggle 
