@@ -15,11 +15,6 @@ const Home: React.FC<HomeProps> = ({ searchQuery }) => {
         </div>
       )}
       
-      {!searchQuery && (
-        <>
-
-        </>
-      )}
     </div>
   );
 };
