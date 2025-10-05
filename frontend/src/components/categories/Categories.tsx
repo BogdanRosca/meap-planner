@@ -47,7 +47,6 @@ const Categories: React.FC<CategoriesProps> = ({ onCategoryClick }) => {
 
   const handleCategoryClick = (categoryName: string) => {
     onCategoryClick?.(categoryName);
-    console.log(`Category clicked: ${categoryName}`);
   };
 
   return (
