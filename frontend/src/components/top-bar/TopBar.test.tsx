@@ -17,9 +17,6 @@ describe('TopBar Component', () => {
 
     expect(screen.getByText('MealCraft')).toBeInTheDocument();
     expect(screen.getByText('🍴')).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText('Search recipes...')
-    ).toBeInTheDocument();
     expect(screen.getByText('John Doe')).toBeInTheDocument(); // Default user
   });
 
@@ -85,54 +82,6 @@ describe('TopBar Component', () => {
 
     expect(recipesButton).toHaveClass('active');
     expect(mealPlannerButton).not.toHaveClass('active');
-  });
-
-  it('renders search input and button', () => {
-    const { container } = render(<TopBar />);
-
-    const searchInput = screen.getByPlaceholderText('Search recipes...');
-    const searchButton = container.querySelector('.search-button');
-
-    expect(searchInput).toBeInTheDocument();
-    expect(searchButton).toBeInTheDocument();
-    expect(searchInput).toHaveAttribute('type', 'text');
-  });
-
-  it('calls onSearch when typing in search input', () => {
-    render(<TopBar onSearch={mockOnSearch} />);
-
-    const searchInput = screen.getByPlaceholderText('Search recipes...');
-    fireEvent.change(searchInput, { target: { value: 'pasta' } });
-
-    expect(mockOnSearch).toHaveBeenCalledWith('pasta');
-    expect(searchInput).toHaveValue('pasta');
-  });
-
-  it('calls onSearch when search form is submitted', () => {
-    render(<TopBar onSearch={mockOnSearch} />);
-
-    const searchInput = screen.getByPlaceholderText('Search recipes...');
-    const searchForm = searchInput.closest('form');
-
-    fireEvent.change(searchInput, { target: { value: 'chicken' } });
-    fireEvent.submit(searchForm!);
-
-    // Should be called twice: once for onChange, once for onSubmit
-    expect(mockOnSearch).toHaveBeenCalledWith('chicken');
-    expect(mockOnSearch).toHaveBeenCalledTimes(2);
-  });
-
-  it('prevents default form submission', () => {
-    render(<TopBar onSearch={mockOnSearch} />);
-
-    const searchInput = screen.getByPlaceholderText('Search recipes...');
-    const searchForm = searchInput.closest('form');
-
-    fireEvent.change(searchInput, { target: { value: 'test' } });
-    fireEvent.submit(searchForm!);
-
-    // Test passes if no page reload occurs (which would happen without preventDefault)
-    expect(mockOnSearch).toHaveBeenCalledWith('test');
   });
 
   it('renders mobile menu button', () => {
