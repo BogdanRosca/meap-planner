@@ -97,9 +97,12 @@ def create_recipe(recipe: RecipeCreate):
         return JSONResponse(
             status_code=status.HTTP_201_CREATED,
             content={
-                "id": new_recipe["id"],
                 "status": "success",
-                "message": "Recipe created successfully"
+                "message": "Recipe created successfully",
+                "name": recipe.name,
+                "category": recipe.category,
+                "prep_time": recipe.prep_time,
+                "portions": recipe.portions
             }
         )
     
